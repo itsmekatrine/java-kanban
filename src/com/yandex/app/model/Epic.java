@@ -1,3 +1,6 @@
+package com.yandex.app.model;
+
+import com.yandex.app.service.StatusTask;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -53,7 +56,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "Epic{" +
+        return "com.yandex.app.model.Epic{" +
                 "title=" + getTitle() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", status=" + getStatus() +

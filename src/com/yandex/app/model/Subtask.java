@@ -1,3 +1,6 @@
+package com.yandex.app.model;
+
+import com.yandex.app.service.StatusTask;
 import java.util.Objects;
 
 public class Subtask extends Task {
@@ -33,7 +36,7 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "Subtask{" +
+        return "com.yandex.app.model.Subtask{" +
                 "epicId=" + epicId +
                 "title=" + getTitle() + '\'' +
                 ", description='" + getDescription() + '\'' +

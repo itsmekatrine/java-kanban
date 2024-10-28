@@ -1,3 +1,11 @@
+package com.yandex.app;
+
+import com.yandex.app.model.Task;
+import com.yandex.app.model.Subtask;
+import com.yandex.app.model.Epic;
+import com.yandex.app.service.StatusTask;
+import com.yandex.app.service.TaskManager;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -6,26 +14,26 @@ public class Main {
         TaskManager manager = new TaskManager();
 
         // создание задач
-        Task task1 = new Task("Task 1", "Task 1");
+        Task task1 = new Task("com.yandex.app.model.Task 1", "com.yandex.app.model.Task 1");
         int taskId1 = manager.createTask(task1);
-        Task task2 = new Task("Task 2", "Task 2");
+        Task task2 = new Task("com.yandex.app.model.Task 2", "com.yandex.app.model.Task 2");
         int taskId2 = manager.createTask(task2);
 
         // создание эпика № 1
-        Epic epic1 = new Epic("Epic 1", "Epic 1");
+        Epic epic1 = new Epic("com.yandex.app.model.Epic 1", "com.yandex.app.model.Epic 1");
         int epicId1 = manager.createEpic(epic1);
 
         // создание подзадач к эпику №1
-        Subtask subtask1 = new Subtask("Subtask 1", "Subtask 1", epicId1);
+        Subtask subtask1 = new Subtask("com.yandex.app.model.Subtask 1", "com.yandex.app.model.Subtask 1", epicId1);
         int subtaskId1 = manager.createSubtask(subtask1);
 
         // создание эпика № 2
-        Epic epic2 = new Epic("Epic 2", "Epic 2");
+        Epic epic2 = new Epic("com.yandex.app.model.Epic 2", "com.yandex.app.model.Epic 2");
         int epicId2 = manager.createEpic(epic2);
 
         // создание подзадач к эпику №2
-        Subtask subtask2 = new Subtask("Subtask 2", "Subtask 2", epicId2);
-        Subtask subtask3 = new Subtask("Subtask 3", "Subtask 3", epicId2);
+        Subtask subtask2 = new Subtask("com.yandex.app.model.Subtask 2", "com.yandex.app.model.Subtask 2", epicId2);
+        Subtask subtask3 = new Subtask("com.yandex.app.model.Subtask 3", "com.yandex.app.model.Subtask 3", epicId2);
         int subtaskId2 = manager.createSubtask(subtask2);
         int subtaskId3 = manager.createSubtask(subtask3);
 
