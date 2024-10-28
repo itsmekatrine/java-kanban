@@ -3,10 +3,8 @@ package com.yandex.app.service;
 import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 public class TaskManager {
     private Map<Integer, Task> tasks;
@@ -81,7 +79,25 @@ public class TaskManager {
     }
 
     public void deleteSubtaskById(int id) {
-        subtasks.remove(id);
+        if (subtasks.containsKey(id)) {
+            Subtask removeSubtask = subtasks.remove(id);
+
+            List<Epic> allEpics = getAllEpics();
+            for (Epic epic : allEpics) {
+                if (epic.hasSubtask(epic, removeSubtask)) {
+                    epic.removeSubtask(removeSubtask);
+                    epic.updateEpicStatus();
+                }
+            }
+        }
+    }
+
+    public void deleteAllSubtasks() {
+        List<Integer> idOfSubtasks = new ArrayList<>(subtasks.keySet());
+
+        for (int id : idOfSubtasks) {
+            deleteSubtaskById(id);
+        }
     }
 
     // методы для эпиков
