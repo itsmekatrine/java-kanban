@@ -122,6 +122,13 @@ public class TaskManager {
     }
 
     public void deleteEpicById(int id) {
+        Epic epic = getEpicById(id);
+        if (epic != null) {
+            List<Subtask> subtasksOfEpic = epic.getSubtasks();
+            for (Subtask subtask : subtasksOfEpic) {
+                deleteSubtaskById(id);
+            }
+        }
         epics.remove(id);
     }
 }
