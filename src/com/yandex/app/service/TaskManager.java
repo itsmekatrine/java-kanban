@@ -65,9 +65,18 @@ public class TaskManager {
         return subtasks.get(id);
     }
 
-    public void updateSubtask(int id, Subtask subtask) {
+    public void updateSubtask(int id, Subtask newSubtask) {
         if (subtasks.containsKey(id)) {
-            subtasks.replace(id, subtask);
+            Subtask oldSubtask = subtasks.get(id);
+            subtasks.replace(id, newSubtask);
+
+            Integer epicId = oldSubtask.getEpicId();
+            if (epicId != null) {
+                Epic epic = getEpicById(id);
+                if (epic != null) {
+                    epic.updateEpicStatus();
+                }
+            }
         }
     }
 
