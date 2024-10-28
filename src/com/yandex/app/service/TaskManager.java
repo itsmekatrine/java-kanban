@@ -50,9 +50,14 @@ public class TaskManager {
         return new ArrayList<>(subtasks.values());
     }
 
-    public int createSubtask(Subtask subtask) {
+    public int createSubtask(int epicId, Subtask subtask) {
         int id = ++currentId;
         subtasks.put(id, subtask);
+        Epic epic = getEpicById(epicId);
+        if (epic != null) {
+            epic.getSubtasks().add(subtask);
+            epic.updateEpicStatus();
+        }
         return id;
     }
 

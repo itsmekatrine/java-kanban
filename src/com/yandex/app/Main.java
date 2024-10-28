@@ -25,7 +25,7 @@ public class Main {
 
         // создание подзадач к эпику №1
         Subtask subtask1 = new Subtask("com.yandex.app.model.Subtask 1", "com.yandex.app.model.Subtask 1", epicId1);
-        int subtaskId1 = manager.createSubtask(subtask1);
+        int subtaskId1 = manager.createSubtask(epicId1, subtask1);
 
         // создание эпика № 2
         Epic epic2 = new Epic("com.yandex.app.model.Epic 2", "com.yandex.app.model.Epic 2");
@@ -34,13 +34,8 @@ public class Main {
         // создание подзадач к эпику №2
         Subtask subtask2 = new Subtask("com.yandex.app.model.Subtask 2", "com.yandex.app.model.Subtask 2", epicId2);
         Subtask subtask3 = new Subtask("com.yandex.app.model.Subtask 3", "com.yandex.app.model.Subtask 3", epicId2);
-        int subtaskId2 = manager.createSubtask(subtask2);
-        int subtaskId3 = manager.createSubtask(subtask3);
-
-        // добавление подзадач в разные эпики
-        epic1.addSubtask(subtask1);
-        epic2.addSubtask(subtask2);
-        epic2.addSubtask(subtask3);
+        int subtaskId2 = manager.createSubtask(epicId2, subtask2);
+        int subtaskId3 = manager.createSubtask(epicId2, subtask3);
 
         // вывод списка эпиков, задач, подзадач
         System.out.println("List of epics — " + manager.getAllEpics());
@@ -60,8 +55,16 @@ public class Main {
         manager.updateSubtask(subtaskId2, subtask2);
         manager.updateEpic(epicId2, epic2);
 
+        System.out.println("Current subtask №3 status: " + subtask3.getStatus());
+        subtask3.setStatus(StatusTask.NEW);
+        manager.updateSubtask(subtaskId3, subtask3);
+        manager.updateEpic(epicId2, epic2);
+
+        System.out.println();
+
         System.out.println("Updated subtask №2 status: " + subtask2.getStatus());
-        System.out.println("Updated epic №2 status: " + epic2.managerStatus());
+        System.out.println("Updated subtask №3 status: " + subtask3.getStatus());
+        System.out.println("Updated epic №2 status: " + epic2.updateEpicStatus());
 
         System.out.println();
 

@@ -14,12 +14,20 @@ public class Epic extends Task {
         this.status = StatusTask.NEW;
     }
 
+    public List<Subtask> getSubtasks() {
+        return subtasks;
+    }
+
+    public void setSubtasks(List<Subtask> subtasks) {
+        this.subtasks = subtasks;
+    }
+
     public void addSubtask(Subtask subtask) {
         subtasks.add(subtask);
     }
 
     // зависимость статуса эпика от подзадач
-    public StatusTask managerStatus() {
+    public StatusTask updateEpicStatus() {
         boolean allDone = true;
 
         for (Subtask subtask : subtasks) {
