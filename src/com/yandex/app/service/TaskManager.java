@@ -48,6 +48,11 @@ public class TaskManager {
         return new ArrayList<>(subtasks.values());
     }
 
+    public List<Subtask> getAllSubtasksOfEpic (int id) {
+        Epic epic = epics.get(id);
+        return new ArrayList<>(epic.getSubtasks());
+    }
+
     public int createSubtask(int epicId, Subtask subtask) {
         int id = ++currentId;
         subtasks.put(id, subtask);
@@ -78,7 +83,7 @@ public class TaskManager {
         }
     }
 
-    public void deleteSubtaskById(int id) {
+    public void deleteSubtaskFromEpic(int id) {
         if (subtasks.containsKey(id)) {
             Subtask removeSubtask = subtasks.remove(id);
 
@@ -96,7 +101,7 @@ public class TaskManager {
         List<Integer> idOfSubtasks = new ArrayList<>(subtasks.keySet());
 
         for (int id : idOfSubtasks) {
-            deleteSubtaskById(id);
+            deleteSubtaskFromEpic(id);
         }
     }
 
@@ -126,7 +131,7 @@ public class TaskManager {
         if (epic != null) {
             List<Subtask> subtasksOfEpic = epic.getSubtasks();
             for (Subtask subtask : subtasksOfEpic) {
-                deleteSubtaskById(id);
+                deleteSubtaskFromEpic(id);
             }
         }
         epics.remove(id);
