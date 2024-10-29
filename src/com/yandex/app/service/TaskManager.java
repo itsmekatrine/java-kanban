@@ -144,4 +144,12 @@ public class TaskManager {
         }
         epics.remove(id);
     }
+
+    public void deleteAllEpics() {
+        List<Integer> idOfEpics = new ArrayList<>(epics.keySet());
+
+        for (int id : idOfEpics) {
+            deleteEpicById(id);
+        }
+    }
 }
