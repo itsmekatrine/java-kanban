@@ -43,6 +43,14 @@ public class TaskManager {
         tasks.remove(id);
     }
 
+    public void deleteAllTasks() {
+        List<Integer> idOfTasks = new ArrayList<>(tasks.keySet());
+
+        for (int id : idOfTasks) {
+            deleteTaskById(id);
+        }
+    }
+
     // методы для подзадач
     public List<Subtask> getAllSubtasks() {
         return new ArrayList<>(subtasks.values());
