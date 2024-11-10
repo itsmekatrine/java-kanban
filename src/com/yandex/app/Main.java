@@ -3,15 +3,16 @@ package com.yandex.app;
 import com.yandex.app.model.Task;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Epic;
-import com.yandex.app.service.StatusTask;
 import com.yandex.app.service.TaskManager;
+import com.yandex.app.service.Managers;
+import com.yandex.app.service.StatusTask;
 
 public class Main {
 
     public static void main(String[] args) {
         System.out.println("Поехали!");
 
-        TaskManager manager = new TaskManager();
+        TaskManager manager = Managers.getDefault();
 
         // создание задач
         Task task1 = new Task("Task 1", "Task 1");
