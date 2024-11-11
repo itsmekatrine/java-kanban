@@ -38,6 +38,10 @@ public class Task {
         this.status = status;
     }
 
+    public int getId() {
+        return 0;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

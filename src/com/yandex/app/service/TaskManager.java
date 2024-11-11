@@ -43,7 +43,4 @@ public interface TaskManager {
     void deleteEpicById(int id);
 
     void deleteAllEpics();
-
-    // метод для просмотра последних задач
-    List<Task> getHistory();
 }

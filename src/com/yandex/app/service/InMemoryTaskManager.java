@@ -4,23 +4,20 @@ import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private Map<Integer, Task> tasks;
     private Map<Integer, Subtask> subtasks;
     private Map<Integer, Epic> epics;
     private int currentId = 0;
-    private ArrayList<Task> history;
+    private HistoryManager history;
 
     public InMemoryTaskManager() {
         tasks = new HashMap<>();
         subtasks = new HashMap<>();
         epics = new HashMap<>();
-        history = new ArrayList<>(10);
+        history = Managers.getDefaultHistory();
     }
 
     // методы для задач
@@ -40,7 +37,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Task getTaskById(int id) {
         Task task = tasks.get(id);
         if (task != null) {
-            updateHistory(task);
+            history.updateHistory(task);
         }
         return task;
     }
@@ -71,9 +68,13 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(subtasks.values());
     }
 
+    @Override
     public List<Subtask> getAllSubtasksOfEpic (int id) {
         Epic epic = epics.get(id);
-        return new ArrayList<>(epic.getSubtasks());
+        if (epic != null) {
+            return epic.getSubtasks();
+        }
+        return Collections.emptyList();
     }
 
     @Override
@@ -92,7 +93,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Subtask getSubtaskById(int id) {
         Subtask subtask = subtasks.get(id);
         if (subtask != null) {
-            updateHistory(subtask);
+            history.updateHistory(subtask);
         }
         return subtask;
     }
@@ -153,7 +154,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Epic getEpicById(int id) {
         Epic epic = epics.get(id);
         if (epic != null) {
-            updateHistory(epic);
+            history.updateHistory(epic);
         }
         return epic;
     }
@@ -182,21 +183,6 @@ public class InMemoryTaskManager implements TaskManager {
 
         for (int id : idOfEpics) {
             deleteEpicById(id);
-        }
-    }
-
-    // метод для просмотра последних задач
-    @Override
-    public List<Task> getHistory() {
-        return new ArrayList<>(history);
-    }
-
-    public void updateHistory(Task task) {
-        if (!history.contains(task)) {
-            if (history.size() == 10) {
-                history.removeFirst();
-            }
-            history.addLast(task);
         }
     }
 }

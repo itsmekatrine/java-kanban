@@ -3,9 +3,7 @@ package com.yandex.app;
 import com.yandex.app.model.Task;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Epic;
-import com.yandex.app.service.TaskManager;
-import com.yandex.app.service.Managers;
-import com.yandex.app.service.StatusTask;
+import com.yandex.app.service.*;
 
 public class Main {
 
@@ -88,5 +86,40 @@ public class Main {
         manager.updateEpic(epicId2, epic2);
         System.out.println("Update list of epics — " + manager.getAllEpics());
         System.out.println("Updated list subtasks of epic №2: " + epic2.getSubtasks());
+
+        // напечатать историю
+        printAllTasks(manager);
+    }
+
+    private static void printAllTasks(TaskManager manager) {
+        HistoryManager history = Managers.getDefaultHistory();
+
+        // добавление в историю просмотров
+        System.out.println("Add in history — " + manager.getAllTasks());
+        history.add(manager.getTaskById(1));
+        history.add(manager.getTaskById(2));
+
+
+        System.out.println("Задачи:");
+        for (Task task : manager.getAllTasks()) {
+            System.out.println(task);
+        }
+        System.out.println("Эпики:");
+        for (Task epic : manager.getAllEpics()) {
+            System.out.println(epic);
+
+            for (Task task : manager.getAllSubtasksOfEpic(epic.getId())) {
+                System.out.println("--> " + task);
+            }
+        }
+        System.out.println("Подзадачи:");
+        for (Task subtask : manager.getAllSubtasks()) {
+            System.out.println(subtask);
+        }
+
+        System.out.println("История:");
+        for (Task task : history.getHistory()) {
+            System.out.println(task);
+        }
     }
 }
