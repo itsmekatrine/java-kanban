@@ -16,6 +16,8 @@ public interface TaskManager {
 
     void updateTask(int id, Task task);
 
+    boolean deleteTaskById(int id);
+
     void deleteAllTasks();
 
     // методы для подзадач
@@ -29,6 +31,8 @@ public interface TaskManager {
 
     void updateSubtask(int id, Subtask newSubtask);
 
+    boolean deleteSubtaskById(int id);
+
     void deleteAllSubtasks();
 
     // методы для эпиков
@@ -40,7 +44,7 @@ public interface TaskManager {
 
     void updateEpic(int id, Epic epic);
 
-    void deleteEpicById(int id);
+    boolean deleteEpicById(int id);
 
     void deleteAllEpics();
 }
