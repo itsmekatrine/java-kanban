@@ -4,11 +4,13 @@ import com.yandex.app.service.StatusTask;
 import java.util.Objects;
 
 public class Task {
+    private int id;
     private String title;
     private String description;
     StatusTask status;
 
-    public Task (String title, String description) {
+    public Task (int id, String title, String description) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.status = StatusTask.NEW;
@@ -38,22 +40,27 @@ public class Task {
         this.status = status;
     }
 
+    public int getId() {
+        return id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return Objects.equals(title, task.title) && Objects.equals(description, task.description) && status == task.status;
+        return id == task.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, description, status);
+        return Objects.hash(id, title, description, status);
     }
 
     @Override
     public String toString() {
         return "com.yandex.app.model.Task{" +
+                "id=" + id +
                 "title=" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
