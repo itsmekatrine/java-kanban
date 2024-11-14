@@ -20,8 +20,8 @@ class SubtaskTest {
         Subtask subtask = new Subtask(2,"Test addNewSubtask", "Test addNewSubtask description", epic.getId());
         manager.createEpic(epic);
         manager.createSubtask(epic.getId(), subtask);
-        historyManager.add(epic);
-        historyManager.add(subtask);
+        historyManager.updateHistory(epic);
+        historyManager.updateHistory(subtask);
 
         final Task savedSubtask = manager.getSubtaskById(subtask.getId());
 

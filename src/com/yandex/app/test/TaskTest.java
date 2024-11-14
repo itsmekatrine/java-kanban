@@ -16,7 +16,7 @@ class TaskTest {
     void addNewTask() {
         Task task = new Task(1,"Test addNewTask", "Test addNewTask description");
         final int taskId = manager.createTask(task);
-        historyManager.add(task);
+        historyManager.updateHistory(task);
 
         final Task savedTask = manager.getTaskById(taskId);
 
@@ -34,7 +34,7 @@ class TaskTest {
     @Test
     void add() {
         Task task = new Task(1,"Test addTask", "Test addTask description");
-        historyManager.add(task);
+        historyManager.updateHistory(task);
         final List<Task> history = historyManager.getHistory();
 
         assertNotNull(history, "История не пустая.");

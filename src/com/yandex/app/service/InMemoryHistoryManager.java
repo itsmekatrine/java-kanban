@@ -30,13 +30,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    @Override
-    public void add(Task task) {
-        if (task != null) {
-            history.add(task);
-        }
-    }
-
     public Task getCurrentTask(int id) {
         Task latestTask = null;
         for (int i = history.size() - 1; i >= 0; i--) {
