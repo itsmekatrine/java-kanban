@@ -1,7 +1,5 @@
 package com.yandex.app.model;
 
-import com.yandex.app.service.StatusTask;
-
 public class Subtask extends Task {
     private int epicId;
 
@@ -9,7 +7,6 @@ public class Subtask extends Task {
         validateEpicId(id, epicId);
         super(id, title, description);
         this.epicId = epicId;
-        this.status = StatusTask.NEW;
     }
 
     private static void validateEpicId(int id, int epicId) {
