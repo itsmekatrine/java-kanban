@@ -96,8 +96,8 @@ public class Main {
 
         // добавление в историю просмотров
         System.out.println("Add in history — " + manager.getAllTasks());
-        history.add(manager.getTaskById(1));
-        history.add(manager.getTaskById(2));
+        history.updateHistory(manager.getTaskById(1));
+        history.updateHistory(manager.getTaskById(2));
 
 
         System.out.println("Задачи:");

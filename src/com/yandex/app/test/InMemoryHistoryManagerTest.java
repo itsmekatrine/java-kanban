@@ -18,7 +18,7 @@ class InMemoryHistoryManagerTest {
     @Test
     void shouldAddAndSaveTaskInHistory() {
         Task task = new Task(1,"Test addNewTask", "Test addNewTask description");
-        historyManager.add(task);
+        historyManager.updateHistory(task);
 
         Task currentTask = historyManager.getCurrentTask(1);
         assertNotNull(currentTask);
@@ -30,8 +30,8 @@ class InMemoryHistoryManagerTest {
         Task firstVersion = new Task(1,"Test addNewTask1", "Test addNewTask description1");
         Task secondVersion = new Task(1,"Test addNewTask2", "Test addNewTask description2");
 
-        historyManager.add(firstVersion);
-        historyManager.add(secondVersion);
+        historyManager.updateHistory(firstVersion);
+        historyManager.updateHistory(secondVersion);
 
         Task lastTask = historyManager.getLastSavedTask(1);
         assertEquals(secondVersion, lastTask);
