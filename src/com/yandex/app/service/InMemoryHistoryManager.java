@@ -4,53 +4,103 @@ import com.yandex.app.model.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private ArrayList<Task> history;
+    private Map<Integer, Node> map;
+    private Node head;
+    private Node tail;
 
     public InMemoryHistoryManager() {
-        history = new ArrayList<>();
+        map = new HashMap<>();
+    }
+
+    // метод для добавления задач в конец списка
+    public void linkLast(Task task) {
+        Node newNode = new Node(task);
+        if (head == null) {
+            head = tail = newNode;
+        } else {
+            tail.next = newNode;
+            newNode.prev = tail;
+            tail = newNode;
+        }
+    }
+
+    // метод для получения задач из списка
+    public List<Task> getTasks() {
+        List<Task> tasks = new ArrayList<>();
+        Node currTask = head;
+        while (currTask != null) {
+            tasks.add(currTask.task);
+            currTask = currTask.next;
+        }
+        return tasks;
+    }
+
+    // метод для удаления узла
+    public void removeNode(Node node) {
+        if (node == head) {
+            head = node.next;
+        } else {
+            node.prev.next = node.next;
+        }
+        if (node == tail) {
+            tail = node.prev;
+        } else {
+            node.next.prev = node.prev;
+        }
+    }
+
+    // метод для добавления задач с учётом удаления предыдущих версий
+    public void add(Task task) {
+        if (task == null ) {
+            return;
+        }
+        int id = task.getId();
+        Node oldNode = map.get(id);
+        if (oldNode != null) {
+            removeNode(oldNode);
+        }
+        linkLast(task);
+        map.put(id, tail);
     }
 
     // метод для просмотра последних задач
     @Override
     public List<Task> getHistory() {
-        return new ArrayList<>(history);
+        return getTasks();
     }
 
+    // метод для обновления истории
     @Override
     public void updateHistory(Task task) {
-        if (task != null && !history.contains(task)) {
-            for (int i = 0; i < history.size(); i++) {
-                Task currTask = history.get(i);
-                if (currTask.equals(task)) {
-                    history.remove(currTask);
-                }
-            }
-            history.add(task);
+        if (task == null ) {
+            return;
         }
+        int id = task.getId();
+        Node oldNode = map.get(id);
+        if (oldNode != null) {
+            oldNode.task = task;
+        }
+        linkLast(task);
+        map.put(id, tail);
     }
 
+    // метод для удаления задач из истории
     @Override
     public void remove(int id) {
-        for (int i = 0; i < history.size(); i++) {
-            Task task = history.get(i);
-            if (task.getId() == id) {
-                history.remove(i);
-            }
+        Node node = map.get(id);
+        if (node != null) {
+            removeNode(node);
+            map.remove(id);
         }
     }
 
     public Task getCurrentTask(int id) {
-        Task latestTask = null;
-        for (int i = history.size() - 1; i >= 0; i--) {
-            Task t = history.get(i);
-            if (t.getId() == id) {
-                latestTask = t;
-                break;
-            }
-        }
-        return latestTask;
+        Node node = map.get(id);
+        return node != null ? node.task : null;
     }
 
     public Task getLastSavedTask(int id) {

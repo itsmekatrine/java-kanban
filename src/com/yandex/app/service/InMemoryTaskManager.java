@@ -55,7 +55,9 @@ public class InMemoryTaskManager implements TaskManager {
     public Task getTaskById(int id) {
         Task task = tasks.get(id);
         if (task != null) {
-            history.updateHistory(task);
+            if (history != null) {
+                history.updateHistory(task);
+            }
         }
         return task;
     }
