@@ -3,9 +3,9 @@ package com.yandex.app.test;
 import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
-import com.yandex.app.service.Managers;
-import com.yandex.app.service.TaskManager;
+import com.yandex.app.service.*;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -13,11 +13,20 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTest {
+    TaskManager manager;
+    private HistoryManager historyManager = new InMemoryHistoryManager();
+    Epic epic;
+    Subtask subtask;
+
+    @BeforeEach
+    public void setup() {
+        manager = new InMemoryTaskManager();
+        epic = new Epic(1, "Test Epic", "Test description");
+        subtask = new Subtask(2, "Test addNewSubtask", "Test addNewSubtask description", epic.getId());
+    }
 
     @Test
     void addNewEpic() {
-        TaskManager manager = Managers.getDefault();
-
         Epic epic = new Epic(1,"Test addNewEpic 1", "Test addNewEpic description 1");
         final int epicId = manager.createEpic(epic);
 
@@ -49,5 +58,23 @@ class EpicTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             Subtask subtask = new Subtask(1,"Test Subtask 1", "Test description 1",epic.getId());
         });
+    }
+
+    @Test
+    public void shouldUpdateEpicStatusAfterDeletingSubtask() {
+        Epic epic = new Epic(1,"Test addNewEpic 1", "Test addNewEpic description 1");
+        manager.createEpic(epic);
+
+        Subtask subtask = new Subtask(2, "Test addNewSubtask", "Test addNewSubtask description", epic.getId());
+        manager.createSubtask(epic.getId(), subtask);
+        assertEquals(1, epic.getSubtasks().size());
+
+        manager.deleteSubtaskFromEpic(subtask.getId());
+        assertTrue(epic.getSubtasks().isEmpty());
+
+        assertEquals(StatusTask.NEW, epic.getStatus(), "Эпик должен иметь статус NEW, когда нет активных подзадач.");
+
+        historyManager.updateHistory(epic);
+        assertEquals(1, historyManager.getHistory().size());
     }
 }

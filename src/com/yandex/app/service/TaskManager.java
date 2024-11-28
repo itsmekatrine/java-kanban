@@ -33,6 +33,8 @@ public interface TaskManager {
 
     boolean deleteSubtaskById(int id);
 
+    void deleteSubtaskFromEpic(int id);
+
     void deleteAllSubtasks();
 
     // методы для эпиков

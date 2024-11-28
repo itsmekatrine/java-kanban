@@ -46,18 +46,18 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int createTask(Task task) {
-        int id = ++currentId;
-        tasks.put(id, task);
-        return id;
+        if (task.getId() <= 0 || tasks.containsKey(task.getId())) {
+            throw new IllegalArgumentException("Invalid or duplicate id of task");
+        }
+        tasks.put(task.getId(), task);
+        return task.getId();
     }
 
     @Override
     public Task getTaskById(int id) {
         Task task = tasks.get(id);
-        if (task != null) {
-            if (history != null) {
-                history.updateHistory(task);
-            }
+        if (task != null && history != null) {
+            history.updateHistory(task);
         }
         return task;
     }
@@ -155,6 +155,11 @@ public class InMemoryTaskManager implements TaskManager {
             return false;
         } else {
             boolean isRemoved = subtasks.remove(subtask) == null;
+            Epic epic = getEpicById(subtask.getEpicId());
+            if (epic != null) {
+                epic.getSubtaskIds().removeIf(taskId -> taskId == id);
+                epic.updateEpicStatus();
+            }
             if (isRemoved) {
                 return true;
             } else {
@@ -163,6 +168,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    @Override
     public void deleteSubtaskFromEpic(int id) {
         if (subtasks.containsKey(id)) {
             Subtask removeSubtask = subtasks.remove(id);
