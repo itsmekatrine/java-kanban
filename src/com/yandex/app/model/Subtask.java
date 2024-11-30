@@ -5,7 +5,8 @@ public class Subtask extends Task {
 
     public Subtask(int id, String title, String description, int epicId) {
         if (id == epicId) {
-            throw new IllegalArgumentException("Эпик не может быть подзадачей самого себя");
+            throw new IllegalArgumentException(
+                    String.format("Эпик не может быть подзадачей самого себя ", epicId, id));
         }
         super(id, title, description);
         this.epicId = epicId;
