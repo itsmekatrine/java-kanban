@@ -3,7 +3,6 @@ package com.yandex.app.service;
 import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
-import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
@@ -104,7 +103,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Subtask> getAllSubtasksOfEpic (int id) {
+    public List<Subtask> getAllSubtasksOfEpic(int id) {
         Epic epic = epics.get(id);
         if (epic != null) {
             return epic.getSubtasks();
