@@ -5,8 +5,8 @@ import java.util.Objects;
 
 public class Task {
     private int id;
-    private String title;
-    private String description;
+    private final String title;
+    private final String description;
     private StatusTask status;
 
     public Task (int id, String title, String description) {
@@ -20,16 +20,8 @@ public class Task {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public StatusTask getStatus() {

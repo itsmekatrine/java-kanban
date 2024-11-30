@@ -3,6 +3,7 @@ package com.yandex.app.service;
 import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
@@ -10,7 +11,9 @@ public class InMemoryTaskManager implements TaskManager {
     private Map<Integer, Task> tasks;
     private Map<Integer, Subtask> subtasks;
     private Map<Integer, Epic> epics;
-    private int currentId = 0;
+    private int currentTaskId = 0;
+    private int currentSubtaskId = 100;
+    private int currentEpicId = 1000;
     private HistoryManager history;
 
     public InMemoryTaskManager() {
@@ -46,8 +49,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int createTask(Task task) {
-        int id = ++currentId;
+        int id = ++currentTaskId;
         tasks.put(id, task);
+        if (history != null) {
+            history.updateHistory(task);
+        }
         return id;
     }
 
@@ -108,7 +114,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int createSubtask(int epicId, Subtask subtask) {
-        int id = ++currentId;
+        int id = ++currentSubtaskId;
         subtasks.put(id, subtask);
         Epic epic = getEpicById(epicId);
         if (epic != null) {
@@ -153,6 +159,11 @@ public class InMemoryTaskManager implements TaskManager {
             return false;
         } else {
             boolean isRemoved = subtasks.remove(subtask) == null;
+            Epic epic = getEpicById(subtask.getEpicId());
+            if (epic != null) {
+                epic.getSubtaskIds().removeIf(taskId -> taskId == id);
+                epic.updateEpicStatus();
+            }
             if (isRemoved) {
                 return true;
             } else {
@@ -161,6 +172,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    @Override
     public void deleteSubtaskFromEpic(int id) {
         if (subtasks.containsKey(id)) {
             Subtask removeSubtask = subtasks.remove(id);
@@ -192,7 +204,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int createEpic(Epic epic) {
-        int id = ++currentId;
+        int id = ++currentEpicId;
         epics.put(id, epic);
         return id;
     }

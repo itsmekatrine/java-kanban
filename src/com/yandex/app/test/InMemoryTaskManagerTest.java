@@ -4,6 +4,7 @@ import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
 import com.yandex.app.service.InMemoryTaskManager;
+import com.yandex.app.service.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,11 +13,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
-    private InMemoryTaskManager manager;
+    private TaskManager manager;
 
     @BeforeEach
     void setup() {
-        manager = new InMemoryTaskManager();
+    manager = new InMemoryTaskManager();
     }
 
     @Test
@@ -64,7 +65,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void shouldGetEpicById() {
-        Epic epic = new Epic(1,"Test addNewEpic", "Test addNewEpic description");
+        Epic epic = new Epic(1001,"Test addNewEpic", "Test addNewEpic description");
         manager.createEpic(epic);
 
         Epic foundEpic = manager.getEpicById(epic.getId());
@@ -73,8 +74,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     void shouldGetSubtaskById() {
-        Epic epic = new Epic(1,"Test addNewEpic", "Test addNewEpic description");
-        Subtask subtask = new Subtask(2,"Test Subtask", "Test description", epic.getId());
+        Epic epic = new Epic(1001,"Test addNewEpic", "Test addNewEpic description");
+        Subtask subtask = new Subtask(101,"Test Subtask", "Test description", epic.getId());
         manager.createEpic(epic);
         manager.createSubtask(epic.getId(), subtask);
 
@@ -84,9 +85,9 @@ class InMemoryTaskManagerTest {
 
     @Test
     void shouldGetSubtasksByEpic() {
-        Epic epic = new Epic(1,"Test addNewEpic 1", "Test addNewEpic description 1");
-        Subtask subtask1 = new Subtask(2, "Test Subtask 1", "Test description 1",epic.getId());
-        Subtask subtask2 = new Subtask(3, "Test Subtask 2", "Test description 2",epic.getId());
+        Epic epic = new Epic(1001,"Test addNewEpic 1", "Test addNewEpic description 1");
+        Subtask subtask1 = new Subtask(101, "Test Subtask 1", "Test description 1",epic.getId());
+        Subtask subtask2 = new Subtask(102, "Test Subtask 2", "Test description 2",epic.getId());
 
         manager.createEpic(epic);
         manager.createSubtask(epic.getId(), subtask1);
@@ -114,7 +115,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void shouldRemoveEpicById() {
-        Epic epic = new Epic(1,"Test addNewEpic", "Test addNewEpic description");
+        Epic epic = new Epic(1001,"Test addNewEpic", "Test addNewEpic description");
         manager.createEpic(epic);
 
         boolean removed = manager.deleteEpicById(epic.getId());
@@ -126,8 +127,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     void shouldRemoveSubtaskById() {
-        Epic epic = new Epic(1,"Test addNewEpic", "Test addNewEpic description");
-        Subtask subtask = new Subtask(2, "Test Subtask", "Test description", epic.getId());
+        Epic epic = new Epic(1001,"Test addNewEpic", "Test addNewEpic description");
+        Subtask subtask = new Subtask(101, "Test Subtask", "Test description", epic.getId());
         manager.createEpic(epic);
         manager.createSubtask(epic.getId(), subtask);
 

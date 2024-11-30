@@ -41,15 +41,15 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     // метод для удаления узла
     public void removeNode(Node node) {
-        if (node == head) {
-            head = node.next;
-        } else {
+        if (node.prev != null) {
             node.prev.next = node.next;
-        }
-        if (node == tail) {
-            tail = node.prev;
         } else {
+            head = node.next;
+        }
+        if (node.next != null) {
             node.next.prev = node.prev;
+        } else {
+            tail = node.prev;
         }
     }
 

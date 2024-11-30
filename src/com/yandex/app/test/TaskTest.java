@@ -2,6 +2,7 @@ package com.yandex.app.test;
 
 import com.yandex.app.model.Task;
 import com.yandex.app.service.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -9,8 +10,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskTest {
-    TaskManager manager = new InMemoryTaskManager();
-    HistoryManager historyManager = new InMemoryHistoryManager();
+    private TaskManager manager;
+    private HistoryManager historyManager = new InMemoryHistoryManager();
+
+    @BeforeEach
+    public void setup() {
+        manager = new InMemoryTaskManager();
+    }
 
     @Test
     void addNewTask() {
@@ -49,5 +55,29 @@ class TaskTest {
 
         Task task3 = new Task(2,"Test Task 3", "Test description 3");
         assertFalse(task1.equals(task3));
+    }
+
+    @Test
+    void shouldChangeTitleInTask() {
+        Task task = new Task(1,"Test Task 1", "Test description 1");
+        manager.createTask(task);
+
+        Task updateTask = new Task(task.getId(), "Test Task 2", task.getDescription());
+        manager.updateTask(updateTask.getId(), task);
+
+        Task requestedTask = manager.getTaskById(1);
+        assertEquals("Test Task 1", requestedTask.getTitle());
+    }
+
+    @Test
+    void shouldChangeDescriptionInTask() {
+        Task task = new Task(1,"Test Task 1", "Test description 1");
+        manager.createTask(task);
+
+        Task updateTask = new Task(task.getId(), task.getTitle(), "Test description 2");
+        manager.updateTask(updateTask.getId(), task);
+
+        Task requestedTask = manager.getTaskById(1);
+        assertEquals("Test description 1", requestedTask.getDescription());
     }
 }
