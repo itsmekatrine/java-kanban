@@ -6,7 +6,7 @@ public class Subtask extends Task {
     public Subtask(int id, String title, String description, int epicId) {
         if (id == epicId) {
             throw new IllegalArgumentException(
-                    String.format("Эпик не может быть подзадачей самого себя ", epicId, id));
+                    String.format("Эпик с идентификатором %d не может быть подзадачей самого себя (подзадача: %d)", epicId, id));
         }
         super(id, title, description);
         this.epicId = epicId;
@@ -41,7 +41,7 @@ public class Subtask extends Task {
         return "com.yandex.app.model.Subtask{" +
                 "epicId=" + epicId +
                 ", id=" + getId() +
-                "title=" + getTitle() + '\'' +
+                ", title='" + getTitle() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", status=" + getStatus() +
                 '}';
