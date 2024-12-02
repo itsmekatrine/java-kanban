@@ -10,6 +10,10 @@ public interface TaskManager {
     // методы для задач
     List<Task> getAllTasks();
 
+    Task getTaskByTitle(String title);
+
+    Task getTaskByDescription(String description);
+
     int createTask(Task task);
 
     Task getTaskById(int id);

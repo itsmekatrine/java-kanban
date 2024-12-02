@@ -16,7 +16,8 @@ class TaskTest {
     @BeforeEach
     public void setup() {
         manager = Managers.getDefault();
-        historyManager = Managers.getDefaultHistory();;
+        historyManager = Managers.getDefaultHistory();
+        historyManager.clearHistory();
     }
 
     @Test

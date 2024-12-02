@@ -98,12 +98,21 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
+    @Override
     public Task getCurrentTask(int id) {
         Node node = history.get(id);
         return node != null ? node.task : null;
     }
 
+    @Override
     public Task getLastSavedTask(int id) {
         return getCurrentTask(id);
+    }
+
+    @Override
+    public void clearHistory() {
+        history.clear();
+        head.next = tail;
+        tail.prev = head;
     }
 }

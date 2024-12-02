@@ -20,7 +20,7 @@ class EpicTest {
 
     @BeforeEach
     public void setup() {
-        manager = new InMemoryTaskManager();
+        manager = Managers.getDefault();
         epic = new Epic(1001, "Test Epic", "Test description");
         subtask = new Subtask(101, "Test addNewSubtask", "Test addNewSubtask description", epic.getId());
     }
@@ -56,7 +56,7 @@ class EpicTest {
     void shouldEpicCannotAddItselfAsSubtask() {
         Epic epic = new Epic(1001,"Test Epic 1", "Test description 1");
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-        Subtask subtask = new Subtask(1001,"Test Subtask 1", "Test description 1",epic.getId());
+            Subtask subtask = new Subtask(1001,"Test Subtask 1", "Test description 1",epic.getId());
         });
     }
 

@@ -3,7 +3,7 @@ package com.yandex.app.test;
 import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
-import com.yandex.app.service.InMemoryTaskManager;
+import com.yandex.app.service.Managers;
 import com.yandex.app.service.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ class InMemoryTaskManagerTest {
 
     @BeforeEach
     void setup() {
-    manager = new InMemoryTaskManager();
+    manager = Managers.getDefault();
     }
 
     @Test

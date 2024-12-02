@@ -19,9 +19,10 @@ class SubtaskTest {
 
     @BeforeEach
     public void setup() {
-        manager = new InMemoryTaskManager();
+        manager = Managers.getDefault();
         epic = new Epic(1001, "Test Epic", "Test description");
         subtask = new Subtask(101, "Test addNewSubtask", "Test addNewSubtask description", epic.getId());
+        historyManager.clearHistory();
     }
 
     @Test
