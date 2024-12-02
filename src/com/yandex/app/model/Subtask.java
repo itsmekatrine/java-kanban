@@ -4,11 +4,11 @@ public class Subtask extends Task {
     private int epicId;
 
     public Subtask(int id, String title, String description, int epicId) {
+        super(id, title, description);
         if (id == epicId) {
             throw new IllegalArgumentException(
                     String.format("Эпик с идентификатором %d не может быть подзадачей самого себя (подзадача: %d)", epicId, id));
         }
-        super(id, title, description);
         this.epicId = epicId;
     }
 
