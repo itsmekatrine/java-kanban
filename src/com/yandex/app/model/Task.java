@@ -53,7 +53,7 @@ public class Task {
     public String toString() {
         return "com.yandex.app.model.Task{" +
                 "id=" + id +
-                "title=" + title + '\'' +
+                ", title=" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 '}';
