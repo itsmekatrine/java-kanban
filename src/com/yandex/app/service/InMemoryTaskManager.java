@@ -79,6 +79,7 @@ public class InMemoryTaskManager implements TaskManager {
             return false;
         } else {
             boolean isRemoved = tasks.remove(task) == null;
+            history.remove(id);
             if (isRemoved) {
                 return true;
             } else {
@@ -158,6 +159,7 @@ public class InMemoryTaskManager implements TaskManager {
             return false;
         } else {
             boolean isRemoved = subtasks.remove(subtask) == null;
+            history.remove(id);
             Epic epic = getEpicById(subtask.getEpicId());
             if (epic != null) {
                 epic.getSubtaskIds().removeIf(taskId -> taskId == id);
@@ -175,7 +177,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteSubtaskFromEpic(int id) {
         if (subtasks.containsKey(id)) {
             Subtask removeSubtask = subtasks.remove(id);
-
+            history.remove(id);
             List<Epic> allEpics = getAllEpics();
             for (Epic epic : allEpics) {
                 if (epic.hasSubtask(epic, removeSubtask)) {
@@ -236,6 +238,7 @@ public class InMemoryTaskManager implements TaskManager {
                 deleteSubtaskFromEpic(id);
             }
             boolean isRemoved = epics.remove(epic) == null;
+            history.remove(id);
             if (isRemoved) {
                 return true;
             } else {
