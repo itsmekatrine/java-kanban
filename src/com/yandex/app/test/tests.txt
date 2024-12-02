@@ -1,7 +1,0 @@
-./InMemoryHistoryManagerTest.java
-./EpicTest.java
-./ImmutabilityTaskTest.java
-./InMemoryTaskManagerTest.java
-./ManagersTest.java
-./SubtaskTest.java
-./TaskTest.java
