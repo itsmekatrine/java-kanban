@@ -13,10 +13,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTest {
-    TaskManager manager;
+    private TaskManager manager;
     private HistoryManager historyManager = new InMemoryHistoryManager();
-    Epic epic;
-    Subtask subtask;
+    private Epic epic;
+    private Subtask subtask;
 
     @BeforeEach
     public void setup() {
@@ -56,7 +56,7 @@ class EpicTest {
     void shouldEpicCannotAddItselfAsSubtask() {
         Epic epic = new Epic(1001,"Test Epic 1", "Test description 1");
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            Subtask subtask = new Subtask(1001,"Test Subtask 1", "Test description 1",epic.getId());
+        Subtask subtask = new Subtask(1001,"Test Subtask 1", "Test description 1",epic.getId());
         });
     }
 
