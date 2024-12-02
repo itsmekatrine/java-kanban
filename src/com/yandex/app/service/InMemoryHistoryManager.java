@@ -8,12 +8,12 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private Map<Integer, Node> map;
+    private Map<Integer, Node> history;
     private Node head;
     private Node tail;
 
     public InMemoryHistoryManager() {
-        map = new HashMap<>();
+        history = new HashMap<>();
     }
 
     // метод для добавления задач в конец списка
@@ -66,27 +66,27 @@ public class InMemoryHistoryManager implements HistoryManager {
             return;
         }
         int id = task.getId();
-        Node oldNode = map.get(id);
+        Node oldNode = history.get(id);
         if (oldNode != null) {
             removeNode(oldNode);
         }
         Node newNode = new Node(task);
         linkLast(newNode);
-        map.put(id, newNode);
+        history.put(id, newNode);
 
     }
 
     @Override
     public void remove(int id) {
-        Node node = map.get(id);
+        Node node = history.get(id);
         if (node != null) {
             removeNode(node);
-            map.remove(id);
+            history.remove(id);
         }
     }
 
     public Task getCurrentTask(int id) {
-        Node node = map.get(id);
+        Node node = history.get(id);
         return node != null ? node.task : null;
     }
 
