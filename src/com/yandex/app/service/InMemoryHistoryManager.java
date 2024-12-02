@@ -14,25 +14,34 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     public InMemoryHistoryManager() {
         history = new HashMap<>();
+        head = new Node(null);
+        tail = new Node(null);
+
+        head.next = tail;
+        tail.prev = head;
     }
 
     // метод для добавления задач в конец списка
     public void linkLast(Node newNode) {
-        if (head == null) {
-            head = newNode;
-            tail = newNode;
+        if (head.next == tail) {
+            head.next = newNode;
+            newNode.prev = head;
+            newNode.next = tail;
+            tail.prev = newNode;
         } else {
-            tail.next = newNode;
-            newNode.prev = tail;
-            tail = newNode;
+            Node currentTail = tail.prev;
+            currentTail.next = newNode;
+            newNode.prev = currentTail;
+            newNode.next = tail;
+            tail.prev = newNode;
         }
     }
 
     // метод для получения задач из списка
     public List<Task> getTasks() {
         List<Task> tasks = new ArrayList<>();
-        Node currTask = head;
-        while (currTask != null) {
+        Node currTask = head.next;
+        while (currTask != tail) {
             tasks.add(currTask.task);
             currTask = currTask.next;
         }
@@ -41,6 +50,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     // метод для удаления узла
     public void removeNode(Node node) {
+        if (node == head || node == tail) {
+            throw new IllegalArgumentException("Нельзя удалить пустые узлы");
+        }
         if (node.prev != null) {
             node.prev.next = node.next;
         } else {
@@ -49,8 +61,10 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (node.next != null) {
             node.next.prev = node.prev;
         } else {
-            tail = node.prev;
+            tail = node.prev; //
         }
+        node.prev = null;
+        node.next = null;
     }
 
 
@@ -73,7 +87,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node newNode = new Node(task);
         linkLast(newNode);
         history.put(id, newNode);
-
     }
 
     @Override
