@@ -68,7 +68,6 @@ class EpicTest {
         Subtask subtask = new Subtask(101, "Test addNewSubtask", "Test addNewSubtask description", epic.getId());
         manager.createSubtask(epic.getId(), subtask);
         assertEquals(1, epic.getSubtasks().size());
-
         manager.deleteSubtaskFromEpic(subtask.getId());
         assertTrue(epic.getSubtasks().isEmpty());
 

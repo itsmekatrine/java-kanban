@@ -1,0 +1,7 @@
+/Users/itsmekatrine/Desktop/java-kanban-sprint4/src/com/yandex/app/test/InMemoryHistoryManagerTest.java
+/Users/itsmekatrine/Desktop/java-kanban-sprint4/src/com/yandex/app/test/EpicTest.java
+/Users/itsmekatrine/Desktop/java-kanban-sprint4/src/com/yandex/app/test/ImmutabilityTaskTest.java
+/Users/itsmekatrine/Desktop/java-kanban-sprint4/src/com/yandex/app/test/InMemoryTaskManagerTest.java
+/Users/itsmekatrine/Desktop/java-kanban-sprint4/src/com/yandex/app/test/ManagersTest.java
+/Users/itsmekatrine/Desktop/java-kanban-sprint4/src/com/yandex/app/test/SubtaskTest.java
+/Users/itsmekatrine/Desktop/java-kanban-sprint4/src/com/yandex/app/test/TaskTest.java
