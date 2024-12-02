@@ -17,8 +17,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     // метод для добавления задач в конец списка
-    public void linkLast(Task task) {
-        Node newNode = new Node(task);
+    public void linkLast(Node newNode) {
         if (head == null) {
             head = newNode;
             tail = newNode;
@@ -69,10 +68,12 @@ public class InMemoryHistoryManager implements HistoryManager {
         int id = task.getId();
         Node oldNode = map.get(id);
         if (oldNode != null) {
-            oldNode.task = task;
+            removeNode(oldNode);
         }
-        linkLast(task);
-        map.put(id, tail);
+        Node newNode = new Node(task);
+        linkLast(newNode);
+        map.put(id, newNode);
+
     }
 
     @Override
