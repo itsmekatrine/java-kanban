@@ -17,6 +17,14 @@ public class Epic extends Task {
         return subtasks;
     }
 
+    public List<Integer> getSubtaskIds() {
+        List<Integer> ids = new ArrayList<>();
+        for (Subtask subtask : subtasks) {
+            ids.add(subtask.getId());
+        }
+        return ids;
+    }
+
     public void setSubtasks(List<Subtask> subtasks) {
         this.subtasks = subtasks;
     }
@@ -72,7 +80,8 @@ public class Epic extends Task {
     @Override
     public String toString() {
         return "com.yandex.app.model.Epic{" +
-                "title=" + getTitle() + '\'' +
+                "id=" + getId() +
+                ", title=" + getTitle() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", status=" + getStatus() +
                 '}';

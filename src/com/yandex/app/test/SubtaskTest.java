@@ -4,6 +4,7 @@ import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
 import com.yandex.app.service.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,13 +12,45 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SubtaskTest {
-    TaskManager manager = new InMemoryTaskManager();
-    HistoryManager historyManager = new InMemoryHistoryManager();
+    private TaskManager manager;
+    private HistoryManager historyManager = new InMemoryHistoryManager();
+    private Subtask subtask;
+    private Epic epic;
+
+    @BeforeEach
+    public void setup() {
+        manager = Managers.getDefault();
+        epic = new Epic(1001, "Test Epic", "Test description");
+        subtask = new Subtask(101, "Test addNewSubtask", "Test addNewSubtask description", epic.getId());
+        historyManager.clearHistory();
+    }
+
+    @Test
+    public void shouldDeletedSubtaskNotContainsId() {
+        manager.createEpic(epic);
+        Subtask subtask1 = new Subtask(101,"Test Subtask 1", "Test description 1", epic.getId());
+        Subtask subtask2 = new Subtask(102,"Test Subtask 2", "Test description 2", epic.getId());
+
+        manager.createSubtask(epic.getId(), subtask1);
+        manager.createSubtask(epic.getId(), subtask2);
+
+        List<Integer> existSubtasksIds = manager.getEpicById(epic.getId()).getSubtaskIds();
+        assertTrue(existSubtasksIds.contains(subtask1.getId()));
+
+        manager.deleteSubtaskFromEpic(subtask1.getId());
+        assertNull(manager.getSubtaskById(subtask1.getId()), "Удалённая подзадача должна быть null.");
+        assertNotNull(manager.getSubtaskById(subtask2.getId()), "Вторая подзадача существует.");
+
+        List<Integer> deletedSubtasksIds = manager.getEpicById(epic.getId()).getSubtaskIds();
+        assertFalse(deletedSubtasksIds.contains(subtask1.getId()));
+
+        historyManager.updateHistory(epic);
+        historyManager.updateHistory(subtask2);
+        assertEquals(2, historyManager.getHistory().size());
+    }
 
     @Test
     void addNewSubtask() {
-        Epic epic = new Epic(1,"Test Epic", "Test description");
-        Subtask subtask = new Subtask(2,"Test addNewSubtask", "Test addNewSubtask description", epic.getId());
         manager.createEpic(epic);
         manager.createSubtask(epic.getId(), subtask);
         historyManager.updateHistory(epic);
@@ -38,11 +71,11 @@ class SubtaskTest {
 
     @Test
     void shouldEqualitySubtasksById() {
-        Subtask subtask1 = new Subtask(1,"Test Subtask 1", "Test description 1",2);
-        Subtask subtask2 = new Subtask(1,"Test Subtask 2", "Test description 2",2);
+        Subtask subtask1 = new Subtask(101,"Test Subtask 1", "Test description 1",2);
+        Subtask subtask2 = new Subtask(101,"Test Subtask 2", "Test description 2",2);
         assertTrue(subtask1.equals(subtask2));
 
-        Subtask subtask3 = new Subtask(3,"Test Subtask 3", "Test description 3",5);
+        Subtask subtask3 = new Subtask(102,"Test Subtask 3", "Test description 3",5);
         assertFalse(subtask1.equals(subtask3));
     }
 }
