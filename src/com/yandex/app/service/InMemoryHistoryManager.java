@@ -43,19 +43,8 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     // метод для удаления узла
     public void removeNode(Node node) {
-        if (node == head || node == tail) {
-            throw new IllegalArgumentException("Нельзя удалить пустые узлы");
-        }
-        if (node.prev != null) {
-            node.prev.next = node.next;
-        } else {
-            head = node.next;
-        }
-        if (node.next != null) {
-            node.next.prev = node.prev;
-        } else {
-            tail = node.prev; //
-        }
+        node.getPrev().setNext(node.getNext());
+        node.getNext().setPrev(node.getPrev());
         node.prev = null;
         node.next = null;
     }
