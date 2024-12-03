@@ -23,18 +23,11 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     // метод для добавления задач в конец списка
     public void linkLast(Node newNode) {
-        if (head.next == tail) {
-            head.next = newNode;
-            newNode.prev = head;
-            newNode.next = tail;
-            tail.prev = newNode;
-        } else {
-            Node currentTail = tail.prev;
-            currentTail.next = newNode;
-            newNode.prev = currentTail;
-            newNode.next = tail;
-            tail.prev = newNode;
-        }
+        Node currentTail = tail.prev;
+        currentTail.next = newNode;
+        newNode.prev = currentTail;
+        newNode.next = tail;
+        tail.prev = newNode;
     }
 
     // метод для получения задач из списка
