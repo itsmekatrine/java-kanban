@@ -1,6 +1,8 @@
 package com.yandex.app.model;
 
 import com.yandex.app.service.StatusTask;
+import com.yandex.app.service.TaskType;
+
 import java.util.Objects;
 
 public class Task {
@@ -8,12 +10,18 @@ public class Task {
     private final String title;
     private final String description;
     private StatusTask status;
+    private final TaskType type;
 
     public Task(int id, String title, String description) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.status = StatusTask.NEW;
+        this.type = TaskType.TASK;
+    }
+
+    public TaskType getType() {
+        return type;
     }
 
     public String getTitle() {

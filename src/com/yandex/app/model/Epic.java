@@ -1,16 +1,20 @@
 package com.yandex.app.model;
 
 import com.yandex.app.service.StatusTask;
+import com.yandex.app.service.TaskType;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
     private List<Subtask> subtasks;
+    private final TaskType type;
 
     public Epic(int id, String title, String description) {
         super(id, title, description);
         this.subtasks = new ArrayList<>();
+        this.type = TaskType.EPIC;
     }
 
     public List<Subtask> getSubtasks() {

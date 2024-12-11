@@ -1,7 +1,10 @@
 package com.yandex.app.model;
 
+import com.yandex.app.service.TaskType;
+
 public class Subtask extends Task {
     private int epicId;
+    private final TaskType type;
 
     public Subtask(int id, String title, String description, int epicId) {
         super(id, title, description);
@@ -10,6 +13,7 @@ public class Subtask extends Task {
                     String.format("Эпик с идентификатором %d не может быть подзадачей самого себя (подзадача: %d)", epicId, id));
         }
         this.epicId = epicId;
+        this.type = TaskType.SUBTASK;
     }
 
     public int getEpicId() {
