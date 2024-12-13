@@ -4,12 +4,9 @@ import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
@@ -18,15 +15,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public FileBackedTaskManager(File file, HistoryManager history) {
         super(history);
         this.file = file;
-    }
-
-    public static class ManagerSaveException extends RuntimeException {
-        public ManagerSaveException(String message) {
-            super(message);
-        }
-        public ManagerSaveException(String message, Throwable cause) {
-            super(message, cause);
-        }
     }
 
     @Override
@@ -69,20 +57,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public void save() {
-        File file = new File("tasks.txt");
+        File file = new File("tasks.csv");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             for (Task task : getAllTasks()) {
                 writer.write(task.toString());
                 writer.newLine();
             }
+            writer.flush();
             for (Subtask subtask : getAllSubtasks()) {
                 writer.write(subtask.toString());
                 writer.newLine();
             }
+            writer.flush();
             for (Epic epic : getAllEpics()) {
                 writer.write(epic.toString());
                 writer.newLine();
             }
+            writer.flush();
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка сохранения данных в файл: " + file.getAbsolutePath(), e);
         }
@@ -124,15 +115,38 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         FileBackedTaskManager manager = new FileBackedTaskManager(file, history);
 
         try {
-            String strings = Files.readString(file.toPath());
+            System.out.println("Absolute path: " + file.getAbsolutePath());
+            String strings = Files.readString(file.toPath(), StandardCharsets.UTF_8);
             String[] lines = strings.split(System.lineSeparator());
             for (String line : lines) {
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+                System.out.println("Reading line: " + line);
                 Task task = fromString(line);
-                manager.createTask(task);
+                if (task instanceof Epic) {
+                    manager.createEpic((Epic) task);
+                } else if (task instanceof Subtask) {
+                    Subtask subtask = (Subtask) task;
+                    manager.createSubtask(subtask.getEpicId(), subtask);
+                } else {
+                    manager.createTask(task);
+                }
             }
         } catch (IOException e) {
+            e.printStackTrace();
             throw new ManagerSaveException("Ошибка чтения файла: " + e.getMessage());
         }
         return manager;
+    }
+
+
+    public static class ManagerSaveException extends RuntimeException {
+        public ManagerSaveException(String message) {
+            super(message);
+        }
+        public ManagerSaveException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 }

@@ -83,11 +83,6 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "com.yandex.app.model.Epic{" +
-                "id=" + getId() +
-                ", title=" + getTitle() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", status=" + getStatus() +
-                '}';
+        return getId() + "," + type + "," + getTitle() + "," + getStatus() + "," + getDescription() + "\n";
     }
 }
