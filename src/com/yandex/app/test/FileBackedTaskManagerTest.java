@@ -7,8 +7,6 @@ import com.yandex.app.service.FileBackedTaskManager;
 import com.yandex.app.service.InMemoryHistoryManager;
 import org.junit.jupiter.api.*;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
