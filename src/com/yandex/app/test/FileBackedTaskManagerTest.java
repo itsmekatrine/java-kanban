@@ -5,6 +5,7 @@ import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
 import com.yandex.app.service.FileBackedTaskManager;
 import com.yandex.app.service.InMemoryHistoryManager;
+import com.yandex.app.service.Managers;
 import org.junit.jupiter.api.*;
 import java.io.File;
 
@@ -17,7 +18,7 @@ public class FileBackedTaskManagerTest {
     @BeforeEach
     public void setup() throws Exception {
         savedFile = new File("tasks.csv");
-        manager = new FileBackedTaskManager(savedFile, new InMemoryHistoryManager());
+        manager = (FileBackedTaskManager) Managers.getDefault();
     }
 
     @AfterEach

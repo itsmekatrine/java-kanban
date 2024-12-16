@@ -105,10 +105,8 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void shouldRemoveTaskFromHistory() {
-        Task task1 = new Task(1, "Task 1", "Description 1");
-        Task task2 = new Task(2, "Task 2", "Description 2");
-        manager.createTask(task1);
-        manager.createTask(task2);
+        manager.createTask(new Task(1, "Task 1", "Description 1"));
+        manager.createTask(new Task(2, "Task 2", "Description 2"));
 
         List<Task> historyBeforeRemoving = historyManager.getHistory();
         System.out.println("История запроса до удаления: " + historyBeforeRemoving);

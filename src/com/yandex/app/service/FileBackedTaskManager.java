@@ -134,6 +134,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 if (line.trim().isEmpty()) {
                     continue;
                 }
+                if (line.startsWith("HISTORY:")) {
+                    // Обработка истории
+                    String task = line.substring("HISTORY:".length());
+                    history.getHistory(); // Например, метод для загрузки истории
+                    continue;
+                }
                 System.out.println("Reading line: " + line);
                 Task task = fromString(line);
                 switch (task.getType()) {
