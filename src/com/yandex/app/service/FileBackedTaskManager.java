@@ -56,6 +56,27 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
+    @Override
+    public boolean deleteTaskById(int id) {
+        boolean result = super.deleteTaskById(id);
+        save();
+        return result;
+    }
+
+    @Override
+    public boolean deleteSubtaskById(int id) {
+        boolean result = super.deleteSubtaskById(id);
+        save();
+        return result;
+    }
+
+    @Override
+    public boolean deleteEpicById(int id) {
+        boolean result = super.deleteEpicById(id);
+        save();
+        return result;
+    }
+
     public void save() {
         File file = new File("tasks.csv");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
