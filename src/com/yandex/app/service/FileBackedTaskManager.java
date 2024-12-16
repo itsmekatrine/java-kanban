@@ -142,13 +142,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
                 System.out.println("Reading line: " + line);
                 Task task = fromString(line);
-                if (task instanceof Epic) {
-                    manager.createEpic((Epic) task);
-                } else if (task instanceof Subtask) {
-                    Subtask subtask = (Subtask) task;
-                    manager.createSubtask(subtask.getEpicId(), subtask);
-                } else {
-                    manager.createTask(task);
+                switch (task.getType()) {
+                    case EPIC:
+                        manager.createEpic((Epic) task);
+                        break;
+                    case SUBTASK:
+                        Subtask subtask = (Subtask) task;
+                        manager.createSubtask(subtask.getEpicId(), subtask);
+                        break;
+                    case TASK:
+                        manager.createTask(task);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Неизвестный тип: " + task.getType());
                 }
             }
         } catch (IOException e) {
