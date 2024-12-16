@@ -59,6 +59,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return id + "," + type + "," + title + "," + status + "," + description + "\n";
+        return String.format("%d,%s,%s,%s,%s",
+                id, getType(), title, status, description);
     }
 }

@@ -17,6 +17,10 @@ public class Epic extends Task {
         this.type = TaskType.EPIC;
     }
 
+    public TaskType getType() {
+        return type;
+    }
+
     public List<Subtask> getSubtasks() {
         return subtasks;
     }
@@ -83,6 +87,6 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return getId() + "," + type + "," + getTitle() + "," + getStatus() + "," + getDescription() + "\n";
+        return super.toString();
     }
 }

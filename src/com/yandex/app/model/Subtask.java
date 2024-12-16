@@ -16,6 +16,10 @@ public class Subtask extends Task {
         this.type = TaskType.SUBTASK;
     }
 
+    public TaskType getType() {
+        return type;
+    }
+
     public int getEpicId() {
         return epicId;
     }
@@ -42,6 +46,6 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return getId() + "," + type + "," + getTitle() + "," + getStatus() + "," + getDescription() + "," + epicId + "\n";
+        return String.format("%s,%d", super.toString(), epicId);
     }
 }
