@@ -1,20 +1,36 @@
 package com.yandex.app.model;
 
 import com.yandex.app.service.StatusTask;
+import com.yandex.app.service.TaskType;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
     private List<Subtask> subtasks;
+    private final TaskType type;
 
     public Epic(int id, String title, String description) {
         super(id, title, description);
         this.subtasks = new ArrayList<>();
+        this.type = TaskType.EPIC;
+    }
+
+    public TaskType getType() {
+        return type;
     }
 
     public List<Subtask> getSubtasks() {
         return subtasks;
+    }
+
+    public List<Integer> getSubtaskIds() {
+        List<Integer> ids = new ArrayList<>();
+        for (Subtask subtask : subtasks) {
+            ids.add(subtask.getId());
+        }
+        return ids;
     }
 
     public void setSubtasks(List<Subtask> subtasks) {
@@ -71,10 +87,6 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "com.yandex.app.model.Epic{" +
-                "title=" + getTitle() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", status=" + getStatus() +
-                '}';
+        return super.toString();
     }
 }

@@ -1,18 +1,23 @@
 package com.yandex.app.model;
 
+import com.yandex.app.service.TaskType;
+
 public class Subtask extends Task {
     private int epicId;
+    private final TaskType type;
 
-    public Subtask(int id, String title, String description, int epicId) throws IllegalArgumentException {
-        validateEpicId(id, epicId);
+    public Subtask(int id, String title, String description, int epicId) {
         super(id, title, description);
+        if (id == epicId) {
+            throw new IllegalArgumentException(
+                    String.format("Эпик с идентификатором %d не может быть подзадачей самого себя (подзадача: %d)", epicId, id));
+        }
         this.epicId = epicId;
+        this.type = TaskType.SUBTASK;
     }
 
-    private static void validateEpicId(int id, int epicId) {
-        if (id == epicId) {
-            throw new IllegalArgumentException("Эпик не может быть подзадачей самого себя");
-        }
+    public TaskType getType() {
+        return type;
     }
 
     public int getEpicId() {
@@ -41,12 +46,6 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "com.yandex.app.model.Subtask{" +
-                "epicId=" + epicId +
-                ", id=" + getId() +
-                "title=" + getTitle() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", status=" + getStatus() +
-                '}';
+        return String.format("%s,%d", super.toString(), epicId);
     }
 }

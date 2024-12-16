@@ -1,35 +1,35 @@
 package com.yandex.app.model;
 
 import com.yandex.app.service.StatusTask;
+import com.yandex.app.service.TaskType;
+
 import java.util.Objects;
 
 public class Task {
     private int id;
-    private String title;
-    private String description;
+    private final String title;
+    private final String description;
     private StatusTask status;
+    private final TaskType type;
 
-    public Task (int id, String title, String description) {
+    public Task(int id, String title, String description) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.status = StatusTask.NEW;
+        this.type = TaskType.TASK;
+    }
+
+    public TaskType getType() {
+        return type;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public StatusTask getStatus() {
@@ -59,11 +59,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "com.yandex.app.model.Task{" +
-                "id=" + id +
-                "title=" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                '}';
+        return String.format("%d,%s,%s,%s,%s",
+                id, getType(), title, status, description);
     }
 }

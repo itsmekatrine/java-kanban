@@ -1,11 +1,14 @@
 package com.yandex.app.service;
 
+import java.io.File;
+
 public class Managers {
-    private static final TaskManager manager = new InMemoryTaskManager();
     private static final HistoryManager history = new InMemoryHistoryManager();
+    private static final String FILE = "tasks.csv";
 
     public static TaskManager getDefault() {
-        return manager;
+        File file = new File(FILE);
+        return new FileBackedTaskManager(file, history);
     }
 
     public static HistoryManager getDefaultHistory() {
