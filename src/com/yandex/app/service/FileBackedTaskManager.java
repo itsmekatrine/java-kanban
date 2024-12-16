@@ -1,5 +1,6 @@
 package com.yandex.app.service;
 
+import com.yandex.app.exception.ManagerSaveException;
 import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
@@ -155,16 +156,5 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             throw new ManagerSaveException("Ошибка чтения файла: " + e.getMessage());
         }
         return manager;
-    }
-
-
-    public static class ManagerSaveException extends RuntimeException {
-        public ManagerSaveException(String message) {
-            super(message);
-        }
-
-        public ManagerSaveException(String message, Throwable cause) {
-            super(message, cause);
-        }
     }
 }
