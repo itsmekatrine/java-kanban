@@ -63,17 +63,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 writer.write(task.toString());
                 writer.newLine();
             }
-            writer.flush();
             for (Subtask subtask : getAllSubtasks()) {
                 writer.write(subtask.toString());
                 writer.newLine();
             }
-            writer.flush();
             for (Epic epic : getAllEpics()) {
                 writer.write(epic.toString());
                 writer.newLine();
             }
-            writer.flush();
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка сохранения данных в файл: " + file.getAbsolutePath(), e);
         }
