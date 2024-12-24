@@ -72,27 +72,32 @@ class TaskTest {
     @Test
     void shouldChangeTitleInTask() {
         LocalDateTime startTime = LocalDateTime.now();
-        Duration duration1 = Duration.ofHours(1);
-        Duration duration2 = Duration.ofHours(2);
-        Task task = new Task(1,"Test Task 1", "Test description 1", duration1, startTime);
+        Duration duration = Duration.ofHours(1);
+        Task task = new Task(1,"Task 1", "Test description 1", duration, startTime);
         manager.createTask(task);
 
-        Task updateTask = new Task(task.getId(), "Test Task 2", task.getDescription(), duration2, startTime.plusHours(1));
+        System.out.println(task);
+        System.out.println("Tasks count: " + manager.getAllTasks().size());
+
+        Task updateTask = new Task(task.getId(), "Task 2", task.getDescription(), task.getDuration(), task.getStartTime());
+        System.out.println("Updating task with ID: " + updateTask.getId());
         manager.updateTask(updateTask.getId(), task);
 
-        Task requestedTask = manager.getTaskById(1);
-        assertEquals("Test Task 1", requestedTask.getTitle());
+        System.out.println(updateTask);
+
+        Task requestedTask = manager.getTaskById(task.getId());
+        System.out.println("Requested Task: " + requestedTask);
+        assertEquals("Task 1", requestedTask.getTitle());
     }
 
     @Test
     void shouldChangeDescriptionInTask() {
         LocalDateTime startTime = LocalDateTime.now();
-        Duration duration1 = Duration.ofHours(1);
-        Duration duration2 = Duration.ofHours(2);
-        Task task = new Task(1,"Test Task 1", "Test description 1", duration1, startTime);
+        Duration duration = Duration.ofHours(1);
+        Task task = new Task(1,"Test Task 1", "Test description 1", duration, startTime);
         manager.createTask(task);
 
-        Task updateTask = new Task(task.getId(), task.getTitle(), "Test description 2", duration2, startTime.plusHours(1));
+        Task updateTask = new Task(task.getId(), task.getTitle(), "Test description 2", task.getDuration(), task.getStartTime());
         manager.updateTask(updateTask.getId(), task);
 
         Task requestedTask = manager.getTaskById(1);

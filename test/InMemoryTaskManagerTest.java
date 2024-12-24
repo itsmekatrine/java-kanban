@@ -111,26 +111,29 @@ class InMemoryTaskManagerTest {
     @Test
     void shouldRemoveTaskById() {
         LocalDateTime startTime = LocalDateTime.now();
-        Task task = new Task(1,"Test addNewTask", "Test addNewTask description", Duration.ofHours(2), startTime);
+        Task task = new Task(1,"Task 1", "Description 1", Duration.ofHours(2), startTime);
         manager.createTask(task);
+
+        List<Task> tasks = manager.getAllTasks();
+        System.out.println(tasks);
 
         boolean removed = manager.deleteTaskById(task.getId());
         assertTrue(removed);
 
         boolean removedTask = manager.deleteTaskById(task.getId());
-        assertTrue(removedTask);
+        assertFalse(removedTask);
     }
 
     @Test
     void shouldRemoveEpicById() {
-        Epic epic = new Epic(1001,"Test addNewEpic", "Test addNewEpic description");
+        Epic epic = new Epic(1001,"Epic 1", "Description 1");
         manager.createEpic(epic);
 
         boolean removed = manager.deleteEpicById(epic.getId());
         assertTrue(removed);
 
         boolean removedEpic = manager.deleteEpicById(epic.getId());
-        assertTrue(removedEpic);
+        assertFalse(removedEpic);
     }
 
     @Test
@@ -145,7 +148,7 @@ class InMemoryTaskManagerTest {
         assertTrue(removed);
 
         boolean removedSubtask = manager.deleteSubtaskById(subtask.getId());
-        assertTrue(removedSubtask);
+        assertFalse(removedSubtask);
     }
 
     @Test

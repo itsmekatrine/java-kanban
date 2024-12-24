@@ -28,6 +28,10 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(tasks.values());
     }
 
+    public Map<Integer, Task> getTasks() {
+        return tasks;
+    }
+
     @Override
     public Task getTaskByTitle(String title) {
         for (Task t : tasks.values()) {
@@ -74,11 +78,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public boolean deleteTaskById(int id) {
-        Task task = getTaskById(id);
+        Task task = tasks.get(id);
         if (task == null) {
             return false;
         } else {
-            boolean isRemoved = tasks.remove(task) == null;
+            boolean isRemoved = tasks.remove(id) != null;
             history.remove(id);
             if (isRemoved) {
                 return true;
@@ -156,11 +160,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public boolean deleteSubtaskById(int id) {
-        Subtask subtask = getSubtaskById(id);
+        Subtask subtask = subtasks.get(id);
         if (subtask == null) {
             return false;
         } else {
-            boolean isRemoved = subtasks.remove(subtask) == null;
+            boolean isRemoved = subtasks.remove(id) != null;
             history.remove(id);
             Epic epic = getEpicById(subtask.getEpicId());
             if (epic != null) {
@@ -241,7 +245,7 @@ public class InMemoryTaskManager implements TaskManager {
                 deleteSubtaskFromEpic(id);
                 history.remove(subtask.getId());
             }
-            boolean isRemoved = epics.remove(epic) == null;
+            boolean isRemoved = epics.remove(id) != null;
             history.remove(id);
             if (isRemoved) {
                 return true;

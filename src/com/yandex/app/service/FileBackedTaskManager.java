@@ -11,19 +11,48 @@ import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeSet;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
     private HistoryManager history;
+    private TreeSet<Task> prioritizedTasks;
 
     public FileBackedTaskManager(File file, HistoryManager history) {
         super(history);
         this.file = file;
+        prioritizedTasks = new TreeSet<>((task1, task2) -> {
+            if (task1 == null && task2 == null) {
+                return 0;
+            } else if (task1 == null) {
+                return 1;
+            } else if (task2 == null) {
+                return -1;
+            } else {
+                LocalDateTime time1 = task1.getStartTime();
+                LocalDateTime time2 = task2.getStartTime();
+
+                if (time1 == null && time2 == null) {
+                    return 0;
+                } else if (time1 == null) {
+                    return 1;
+                } else if (time2 == null) {
+                    return -1;
+                } else {
+                    return time1.compareTo(time2);
+                }
+            }
+        });
     }
 
     @Override
     public int createTask(Task task) {
         int id = super.createTask(task);
+        if (task.getStartTime() != null) {
+            prioritizedTasks.add(task);
+        }
         save();
         return id;
     }
@@ -38,12 +67,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     @Override
     public int createSubtask(int epicId, Subtask subtask) {
         int id = super.createSubtask(epicId, subtask);
+        if (subtask.getStartTime() != null) {
+            prioritizedTasks.add(subtask);
+        }
         save();
         return id;
     }
 
     @Override
     public void updateTask(int id, Task task) {
+        Task oldTask = getTasks().get(id);
+        if (oldTask != null) {
+            prioritizedTasks.remove(oldTask);
+            if (task.getStartTime() != null) {
+                prioritizedTasks.add(task);
+            }
+        }
         super.updateTask(id, task);
         save();
     }
@@ -56,6 +95,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public void updateSubtask(int id, Subtask subtask) {
+        Subtask oldSubtask = getAllSubtasks().get(id);
+        if (oldSubtask != null) {
+            prioritizedTasks.remove(oldSubtask);
+            if (subtask.getStartTime() != null) {
+                prioritizedTasks.add(subtask);
+            }
+        }
         super.updateSubtask(id, subtask);
         save();
     }
@@ -63,22 +109,43 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     @Override
     public boolean deleteTaskById(int id) {
         boolean result = super.deleteTaskById(id);
-        save();
+        if (result) {
+            Task task = getTaskById(id);
+            prioritizedTasks.remove(task);
+            save();
+        }
         return result;
     }
 
     @Override
     public boolean deleteSubtaskById(int id) {
         boolean result = super.deleteSubtaskById(id);
-        save();
+        if (result) {
+            Subtask subtask = getSubtaskById(id);
+            prioritizedTasks.remove(subtask);
+            save();
+        }
         return result;
     }
 
     @Override
     public boolean deleteEpicById(int id) {
         boolean result = super.deleteEpicById(id);
-        save();
+        if (result) {
+            Epic epic = getEpicById(id);
+            List<Subtask> epicSubtasks = getAllSubtasksOfEpic(id);
+            for (Subtask subtask : epicSubtasks) {
+                prioritizedTasks.remove(subtask);
+                getAllSubtasks().remove(subtask.getId());
+            }
+            prioritizedTasks.remove(epic);
+            save();
+        }
         return result;
+    }
+
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
     }
 
     public void save() {

@@ -11,6 +11,7 @@ import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -112,5 +113,32 @@ public class FileBackedTaskManagerTest {
 
         LocalDateTime expectedStartTime = LocalDateTime.of(2024, 12, 24, 18, 0);
         Assertions.assertEquals(expectedStartTime, task.getStartTime());
+    }
+
+    @Test
+    public void shouldSortedTasksByStartTime() {
+        Task task1 = new Task(1, "Task 1", "Description 1", Duration.ofMinutes(10), LocalDateTime.of(2024, 10, 1, 10, 0));
+        Task task2 = new Task(2, "Task 2", "Description 2", Duration.ofMinutes(15), LocalDateTime.of(2024, 10, 1, 12, 0));
+        Epic epic = new Epic(1001,"Test Epic 1", "Test description 1");
+        Subtask subtask3 = new Subtask(101, "Subtask 3", "Description 3", 1001, Duration.ofMinutes(20), LocalDateTime.of(2024, 9, 30, 10, 0));
+        Subtask subtask4 = new Subtask(102, "Subtask 4", "Description 4", 1001, Duration.ofMinutes(25), null);
+        Task task5 = new Task(5, "Task 5", "Description 5", Duration.ofMinutes(30), LocalDateTime.of(2023, 10, 1, 9, 0));
+
+        manager.createTask(task1);
+        manager.createTask(task2);
+        manager.createEpic(epic);
+        manager.createSubtask(1001, subtask3);
+        manager.createSubtask(1001, subtask4);
+        manager.createTask(task5);
+
+        List<Task> prioritizedTasks = manager.getPrioritizedTasks();
+
+        System.out.println(prioritizedTasks);
+
+        Assertions.assertEquals(task5, prioritizedTasks.get(0));
+        Assertions.assertEquals(subtask3, prioritizedTasks.get(1));
+        Assertions.assertEquals(task1, prioritizedTasks.get(2));
+        Assertions.assertEquals(task2, prioritizedTasks.get(3));
+        Assertions.assertEquals(subtask4, prioritizedTasks.get(4));
     }
 }
