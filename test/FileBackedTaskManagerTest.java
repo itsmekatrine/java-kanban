@@ -10,6 +10,7 @@ import org.junit.jupiter.api.*;
 import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -72,5 +73,44 @@ public class FileBackedTaskManagerTest {
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(savedFile, new InMemoryHistoryManager());
 
         Assertions.assertEquals(2, loadedManager.getAllTasks().size());
+    }
+
+    @Test
+    public void shouldSaveDurationAndStartTime() {
+        Duration duration = Duration.ofMinutes(120);
+        LocalDateTime startTime = LocalDateTime.of(2024, 12, 24, 18, 0);
+        Task task = new Task(1, "Task 1", "Description 1", duration, startTime);
+
+        Assertions.assertEquals(1, task.getId());
+        Assertions.assertEquals("Task 1", task.getTitle());
+        Assertions.assertEquals("Description 1", task.getDescription());
+        Assertions.assertEquals(duration, task.getDuration());
+        Assertions.assertEquals(startTime, task.getStartTime());
+    }
+
+    @Test
+    public void shouldTaskToString() {
+        Duration duration = Duration.ofMinutes(120);
+        LocalDateTime startTime = LocalDateTime.of(2024, 12, 24, 18, 0);
+        Task task = new Task(1, "Task 1", "Description 1", duration, startTime);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd–MM–yy | HH:mm");
+        String expectedString = String.format("1,TASK,Task 1,NEW,Description 1,%d,%s", duration.toMinutes(), startTime.format(formatter));
+
+        Assertions.assertEquals(expectedString, task.toString());
+    }
+
+    @Test
+    public void shouldTaskFromString() {
+        String input = "1,TASK,Task 1,NEW,Description 1,120,24–12–24 | 18:00";
+        Task task = manager.fromString(input);
+
+        Assertions.assertEquals(1, task.getId());
+        Assertions.assertEquals("Task 1", task.getTitle());
+        Assertions.assertEquals("Description 1", task.getDescription());
+        Assertions.assertEquals(Duration.ofMinutes(120), task.getDuration());
+
+        LocalDateTime expectedStartTime = LocalDateTime.of(2024, 12, 24, 18, 0);
+        Assertions.assertEquals(expectedStartTime, task.getStartTime());
     }
 }
