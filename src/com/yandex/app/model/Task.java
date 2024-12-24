@@ -3,7 +3,10 @@ package com.yandex.app.model;
 import com.yandex.app.service.StatusTask;
 import com.yandex.app.service.TaskType;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Task {
     private int id;
@@ -11,13 +14,17 @@ public class Task {
     private final String description;
     private StatusTask status;
     private final TaskType type;
+    private Duration duration;
+    private LocalDateTime startTime;
 
-    public Task(int id, String title, String description) {
+    public Task(int id, String title, String description, Duration duration, LocalDateTime startTime) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.status = StatusTask.NEW;
         this.type = TaskType.TASK;
+        this.duration = duration;
+        this.startTime = startTime != null ? startTime : LocalDateTime.now();
     }
 
     public TaskType getType() {
@@ -44,6 +51,22 @@ public class Task {
         return id;
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plus(duration);
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,7 +82,8 @@ public class Task {
 
     @Override
     public String toString() {
-        return String.format("%d,%s,%s,%s,%s",
-                id, getType(), title, status, description);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd–MM–yy | HH:mm");
+        return String.format("%d,%s,%s,%s,%s,%d,%s",
+                id, getType(), title, status, description, duration.toMinutes(), startTime.format(formatter));
     }
 }

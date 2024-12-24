@@ -5,6 +5,8 @@ import com.yandex.app.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,7 +24,9 @@ class TaskTest {
 
     @Test
     void addNewTask() {
-        Task task = new Task(1,"Test addNewTask", "Test addNewTask description");
+        LocalDateTime startTime = LocalDateTime.now();
+        Duration duration = Duration.ofHours(2);
+        Task task = new Task(1,"Test addNewTask", "Test addNewTask description", duration, startTime);
         final int taskId = manager.createTask(task);
         historyManager.updateHistory(task);
 
@@ -41,7 +45,9 @@ class TaskTest {
 
     @Test
     void add() {
-        Task task = new Task(1,"Test addTask", "Test addTask description");
+        LocalDateTime startTime = LocalDateTime.now();
+        Duration duration = Duration.ofHours(2);
+        Task task = new Task(1,"Test addTask", "Test addTask description", duration, startTime);
         historyManager.updateHistory(task);
         final List<Task> history = historyManager.getHistory();
 
@@ -51,20 +57,27 @@ class TaskTest {
 
     @Test
     void shouldEqualityTasksById() {
-        Task task1 = new Task(1,"Test Task 1", "Test description 1");
-        Task task2 = new Task(1,"Test Task 2", "Test description 2");
+        LocalDateTime startTime = LocalDateTime.now();
+        Duration duration1 = Duration.ofHours(1);
+        Duration duration2 = Duration.ofHours(2);
+        Duration duration3 = Duration.ofHours(4);
+        Task task1 = new Task(1,"Test Task 1", "Test description 1", duration1, startTime);
+        Task task2 = new Task(1,"Test Task 2", "Test description 2", duration2, startTime.plusHours(1));
         assertTrue(task1.equals(task2));
 
-        Task task3 = new Task(2,"Test Task 3", "Test description 3");
+        Task task3 = new Task(2,"Test Task 3", "Test description 3", duration3, startTime.plusHours(2));
         assertFalse(task1.equals(task3));
     }
 
     @Test
     void shouldChangeTitleInTask() {
-        Task task = new Task(1,"Test Task 1", "Test description 1");
+        LocalDateTime startTime = LocalDateTime.now();
+        Duration duration1 = Duration.ofHours(1);
+        Duration duration2 = Duration.ofHours(2);
+        Task task = new Task(1,"Test Task 1", "Test description 1", duration1, startTime);
         manager.createTask(task);
 
-        Task updateTask = new Task(task.getId(), "Test Task 2", task.getDescription());
+        Task updateTask = new Task(task.getId(), "Test Task 2", task.getDescription(), duration2, startTime.plusHours(1));
         manager.updateTask(updateTask.getId(), task);
 
         Task requestedTask = manager.getTaskById(1);
@@ -73,13 +86,18 @@ class TaskTest {
 
     @Test
     void shouldChangeDescriptionInTask() {
-        Task task = new Task(1,"Test Task 1", "Test description 1");
+        LocalDateTime startTime = LocalDateTime.now();
+        Duration duration1 = Duration.ofHours(1);
+        Duration duration2 = Duration.ofHours(2);
+        Task task = new Task(1,"Test Task 1", "Test description 1", duration1, startTime);
         manager.createTask(task);
 
-        Task updateTask = new Task(task.getId(), task.getTitle(), "Test description 2");
+        Task updateTask = new Task(task.getId(), task.getTitle(), "Test description 2", duration2, startTime.plusHours(1));
         manager.updateTask(updateTask.getId(), task);
 
         Task requestedTask = manager.getTaskById(1);
         assertEquals("Test description 1", requestedTask.getDescription());
     }
+
+
 }

@@ -8,6 +8,9 @@ import com.yandex.app.model.Task;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
@@ -109,15 +112,27 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String title = parts[2];
         String status = parts[3];
         String description = parts[4];
+        Duration duration = Duration.ZERO;
+        LocalDateTime startTime = LocalDateTime.now();
+        if (parts.length > 5) {
+            long durationInMinutes = Long.parseLong(parts[5]);
+            duration = Duration.ofMinutes(durationInMinutes);
+        }
+        if (parts.length > 6) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd–MM–yy | HH:mm");
+            startTime = LocalDateTime.parse(parts[6], formatter);
+        }
 
         switch (type) {
             case TASK:
-                return new Task(id, title, description);
+                return new Task(id, title, description, duration, startTime);
             case EPIC:
                 return new Epic(id, title, description);
             case SUBTASK:
-                int epicId = Integer.parseInt(parts[5]);
-                return new Subtask(id, title, description, epicId);
+                if (parts.length > 7) {
+                    int epicId = Integer.parseInt(parts[7]);
+                    return new Subtask(id, title, description, epicId, duration, startTime);
+                }
             default:
                 throw new IllegalArgumentException("Неизвестный тип: " + type);
         }
@@ -135,9 +150,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     continue;
                 }
                 if (line.startsWith("HISTORY:")) {
-                    // Обработка истории
                     String task = line.substring("HISTORY:".length());
-                    history.getHistory(); // Например, метод для загрузки истории
+                    history.getHistory();
                     continue;
                 }
                 System.out.println("Reading line: " + line);

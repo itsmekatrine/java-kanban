@@ -9,6 +9,8 @@ import com.yandex.app.service.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,7 +28,8 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void shouldAddAndSaveTaskInHistory() {
-        Task task = new Task(1,"Test addNewTask", "Test addNewTask description");
+        LocalDateTime startTime = LocalDateTime.now();
+        Task task = new Task(1,"Test addNewTask", "Test addNewTask description", Duration.ofHours(2), startTime);
         historyManager.updateHistory(task);
 
         Task currentTask = historyManager.getCurrentTask(1);
@@ -36,8 +39,9 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void shouldEqualsTaskWithLastVersionTask() {
-        Task firstVersion = new Task(1,"Test addNewTask1", "Test addNewTask description1");
-        Task secondVersion = new Task(1,"Test addNewTask2", "Test addNewTask description2");
+        LocalDateTime startTime = LocalDateTime.now();
+        Task firstVersion = new Task(1,"Test addNewTask1", "Test addNewTask description1", Duration.ofHours(1), startTime);
+        Task secondVersion = new Task(1,"Test addNewTask2", "Test addNewTask description2", Duration.ofHours(2), startTime.plusHours(1));
 
         historyManager.updateHistory(firstVersion);
         historyManager.updateHistory(secondVersion);
@@ -53,17 +57,18 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void shouldHistoryWithoutDuplicates() {
-        Task task1 = new Task(1, "Task 1", "Description 1");
-        Task task2 = new Task(2, "Task 2", "Description 2");
+        LocalDateTime startTime = LocalDateTime.now();
+        Task task1 = new Task(1, "Task 1", "Description 1", Duration.ofHours(1), startTime);
+        Task task2 = new Task(2, "Task 2", "Description 2", Duration.ofHours(2), startTime.plusHours(1));
         manager.createTask(task1);
         manager.createTask(task2);
 
         Epic epic1 = new Epic(1001, "Epic 1", "Epic Description");
         manager.createEpic(epic1);
 
-        Subtask subtask1 = new Subtask(101, "Subtask 1", "Description 1", epic1.getId());
-        Subtask subtask2 = new Subtask(102, "Subtask 2", "Description 2", epic1.getId());
-        Subtask subtask3 = new Subtask(103, "Subtask 3", "Description 3", epic1.getId());
+        Subtask subtask1 = new Subtask(101, "Subtask 1", "Description 1", epic1.getId(), Duration.ofHours(1), startTime);
+        Subtask subtask2 = new Subtask(102, "Subtask 2", "Description 2", epic1.getId(), Duration.ofHours(2), startTime.plusHours(1));
+        Subtask subtask3 = new Subtask(103, "Subtask 3", "Description 3", epic1.getId(), Duration.ofHours(3), startTime.plusHours(2));
 
         manager.createSubtask(epic1.getId(), subtask1);
         manager.createSubtask(epic1.getId(), subtask2);
@@ -105,8 +110,9 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void shouldRemoveTaskFromHistory() {
-        manager.createTask(new Task(1, "Task 1", "Description 1"));
-        manager.createTask(new Task(2, "Task 2", "Description 2"));
+        LocalDateTime startTime = LocalDateTime.now();
+        manager.createTask(new Task(1, "Task 1", "Description 1", Duration.ofHours(1), startTime));
+        manager.createTask(new Task(2, "Task 2", "Description 2", Duration.ofHours(2), startTime.plusHours(1)));
 
         List<Task> historyBeforeRemoving = historyManager.getHistory();
         System.out.println("История запроса до удаления: " + historyBeforeRemoving);
@@ -121,12 +127,13 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void shouldRemoveEpicFromHistory() {
+        LocalDateTime startTime = LocalDateTime.now();
         Epic epic1 = new Epic(1001, "Epic 1", "Epic Description");
         manager.createEpic(epic1);
 
-        Subtask subtask1 = new Subtask(101, "Subtask 1", "Description 1", epic1.getId());
-        Subtask subtask2 = new Subtask(102, "Subtask 2", "Description 2", epic1.getId());
-        Subtask subtask3 = new Subtask(103, "Subtask 3", "Description 3", epic1.getId());
+        Subtask subtask1 = new Subtask(101, "Subtask 1", "Description 1", epic1.getId(), Duration.ofHours(1), startTime);
+        Subtask subtask2 = new Subtask(102, "Subtask 2", "Description 2", epic1.getId(), Duration.ofHours(2), startTime.plusHours(1));
+        Subtask subtask3 = new Subtask(103, "Subtask 3", "Description 3", epic1.getId(), Duration.ofHours(3), startTime.plusHours(2));
 
         manager.createSubtask(epic1.getId(), subtask1);
         manager.createSubtask(epic1.getId(), subtask2);

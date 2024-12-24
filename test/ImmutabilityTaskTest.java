@@ -6,6 +6,9 @@ import com.yandex.app.service.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ImmutabilityTaskTest {
@@ -15,7 +18,9 @@ class ImmutabilityTaskTest {
     @BeforeEach
     public void setup() {
         manager = Managers.getDefault();
-        task = new Task(1,"Test addNewTask", "Test addNewTask description");
+        LocalDateTime startTime = LocalDateTime.now();
+        Duration duration = Duration.ofHours(1);
+        task = new Task(1,"Test addNewTask", "Test addNewTask description", duration, startTime);
     }
 
     @Test

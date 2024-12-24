@@ -8,6 +8,8 @@ import com.yandex.app.service.InMemoryHistoryManager;
 import com.yandex.app.service.Managers;
 import org.junit.jupiter.api.*;
 import java.io.File;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -42,10 +44,11 @@ public class FileBackedTaskManagerTest {
 
     @Test
     public void shouldSaveTasks() {
-        manager.createTask(new Task(1, "Task 1", "Description 1"));
-        manager.createTask(new Task(2, "Task 2", "Description 2"));
+        LocalDateTime startTime = LocalDateTime.now();
+        manager.createTask(new Task(1, "Task 1", "Description 1", Duration.ofMinutes(30), startTime));
+        manager.createTask(new Task(2, "Task 2", "Description 2", Duration.ofMinutes(60), startTime.plusHours(1)));
         manager.createEpic(new Epic(1001, "Epic 1", "Description 1"));
-        manager.createSubtask(1001, new Subtask(101, "Subtask 1", "Description 1", 1001));
+        manager.createSubtask(1001, new Subtask(101, "Subtask 1", "Description 1", 1001, Duration.ofMinutes(180), startTime.plusHours(3)));
 
         manager.save();
         assertTrue(savedFile.exists(), "File should be created.");
@@ -59,8 +62,9 @@ public class FileBackedTaskManagerTest {
 
     @Test
     public void shouldLoadTasks() {
-        manager.createTask(new Task(1, "Task 1", "Description 1"));
-        manager.createTask(new Task(2, "Task 2", "Description 2"));
+        LocalDateTime startTime = LocalDateTime.now();
+        manager.createTask(new Task(1, "Task 1", "Description 1", Duration.ofMinutes(30), startTime));
+        manager.createTask(new Task(2, "Task 2", "Description 2", Duration.ofMinutes(60), startTime.plusHours(1)));
 
         manager.save();
         assertTrue(savedFile.exists(), "File should be created.");

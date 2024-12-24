@@ -7,6 +7,8 @@ import com.yandex.app.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,15 +23,17 @@ class SubtaskTest {
     public void setup() {
         manager = Managers.getDefault();
         epic = new Epic(1001, "Test Epic", "Test description");
-        subtask = new Subtask(101, "Test addNewSubtask", "Test addNewSubtask description", epic.getId());
+        subtask = new Subtask(101, "Test addNewSubtask", "Test addNewSubtask description", epic.getId(), Duration.ofHours(2), LocalDateTime.now());
         historyManager.clearHistory();
     }
 
     @Test
     public void shouldDeletedSubtaskNotContainsId() {
+        LocalDateTime startTime = LocalDateTime.now();
+        epic.setStartTime(startTime);
         manager.createEpic(epic);
-        Subtask subtask1 = new Subtask(101,"Test Subtask 1", "Test description 1", epic.getId());
-        Subtask subtask2 = new Subtask(102,"Test Subtask 2", "Test description 2", epic.getId());
+        Subtask subtask1 = new Subtask(101,"Test Subtask 1", "Test description 1", epic.getId(), Duration.ofHours(1), startTime.plusHours(1));
+        Subtask subtask2 = new Subtask(102,"Test Subtask 2", "Test description 2", epic.getId(), Duration.ofHours(2), startTime.plusHours(2));
 
         manager.createSubtask(epic.getId(), subtask1);
         manager.createSubtask(epic.getId(), subtask2);
@@ -71,11 +75,13 @@ class SubtaskTest {
 
     @Test
     void shouldEqualitySubtasksById() {
-        Subtask subtask1 = new Subtask(101,"Test Subtask 1", "Test description 1",2);
-        Subtask subtask2 = new Subtask(101,"Test Subtask 2", "Test description 2",2);
+        LocalDateTime startTime = LocalDateTime.now();
+        epic.setStartTime(startTime);
+        Subtask subtask1 = new Subtask(101,"Test Subtask 1", "Test description 1",2, Duration.ofHours(1), startTime.plusHours(1));
+        Subtask subtask2 = new Subtask(101,"Test Subtask 2", "Test description 2",2, Duration.ofHours(2), startTime.plusHours(2));
         assertTrue(subtask1.equals(subtask2));
 
-        Subtask subtask3 = new Subtask(102,"Test Subtask 3", "Test description 3",5);
+        Subtask subtask3 = new Subtask(102,"Test Subtask 3", "Test description 3",5, Duration.ofHours(3), startTime.plusHours(3));
         assertFalse(subtask1.equals(subtask3));
     }
 }

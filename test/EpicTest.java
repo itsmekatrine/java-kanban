@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,9 +22,10 @@ class EpicTest {
 
     @BeforeEach
     public void setup() {
+        LocalDateTime startTime = LocalDateTime.now();
         manager = Managers.getDefault();
         epic = new Epic(1001, "Test Epic", "Test description");
-        subtask = new Subtask(101, "Test addNewSubtask", "Test addNewSubtask description", epic.getId());
+        subtask = new Subtask(101, "Test addNewSubtask", "Test addNewSubtask description", epic.getId(), Duration.ofHours(2), startTime);
     }
 
     @Test
@@ -54,18 +57,20 @@ class EpicTest {
 
     @Test
     void shouldEpicCannotAddItselfAsSubtask() {
+        LocalDateTime startTime = LocalDateTime.now();
         Epic epic = new Epic(1001,"Test Epic 1", "Test description 1");
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            Subtask subtask = new Subtask(1001,"Test Subtask 1", "Test description 1",epic.getId());
+            Subtask subtask = new Subtask(1001,"Test Subtask 1", "Test description 1",epic.getId(), Duration.ofHours(2), startTime);
         });
     }
 
     @Test
     public void shouldUpdateEpicStatusAfterDeletingSubtask() {
+        LocalDateTime startTime = LocalDateTime.now();
         Epic epic = new Epic(1001,"Test addNewEpic 1", "Test addNewEpic description 1");
         manager.createEpic(epic);
 
-        Subtask subtask = new Subtask(101, "Test addNewSubtask", "Test addNewSubtask description", epic.getId());
+        Subtask subtask = new Subtask(101, "Test addNewSubtask", "Test addNewSubtask description", epic.getId(), Duration.ofHours(2), startTime);
         manager.createSubtask(epic.getId(), subtask);
         assertEquals(1, epic.getSubtasks().size());
         manager.deleteSubtaskFromEpic(subtask.getId());

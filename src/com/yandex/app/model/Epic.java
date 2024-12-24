@@ -3,6 +3,8 @@ package com.yandex.app.model;
 import com.yandex.app.service.StatusTask;
 import com.yandex.app.service.TaskType;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -10,11 +12,17 @@ import java.util.Objects;
 public class Epic extends Task {
     private List<Subtask> subtasks;
     private final TaskType type;
+    private Duration duration;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
     public Epic(int id, String title, String description) {
-        super(id, title, description);
+        super(id, title, description, Duration.ZERO, null);
         this.subtasks = new ArrayList<>();
         this.type = TaskType.EPIC;
+        this.duration = Duration.ZERO;
+        this.startTime = null;
+        this.endTime = null;
     }
 
     public TaskType getType() {
@@ -69,6 +77,29 @@ public class Epic extends Task {
             }
             return StatusTask.NEW;
         }
+    }
+
+    // подсчёт продолжительности выполнения эпика
+    public Duration calculateEpicDuration() {
+        this.duration = Duration.ZERO;
+        this.startTime = LocalDateTime.MAX;
+        this.endTime = LocalDateTime.MIN;
+
+        for (Task subtask : subtasks) {
+            this.duration = this.duration.plus(subtask.getDuration());
+            if (subtask.getStartTime() != null && subtask.getStartTime().isBefore(this.startTime)) {
+                this.startTime = subtask.getStartTime();
+            }
+            if (subtask.getEndTime() != null && subtask.getEndTime().isAfter(this.endTime)) {
+                this.endTime = subtask.getEndTime();
+            }
+        }
+
+        if (subtasks.isEmpty()) {
+            this.startTime = null;
+            this.endTime = null;
+        }
+        return this.duration;
     }
 
     @Override

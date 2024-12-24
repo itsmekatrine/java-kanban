@@ -120,6 +120,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic != null) {
             epic.getSubtasks().add(subtask);
             epic.updateEpicStatus();
+            epic.calculateEpicDuration();
             history.updateHistory(subtask);
         }
         return id;
