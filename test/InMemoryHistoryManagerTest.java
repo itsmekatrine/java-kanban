@@ -67,8 +67,8 @@ class InMemoryHistoryManagerTest {
         manager.createEpic(epic1);
 
         Subtask subtask1 = new Subtask(101, "Subtask 1", "Description 1", epic1.getId(), Duration.ofHours(1), startTime);
-        Subtask subtask2 = new Subtask(102, "Subtask 2", "Description 2", epic1.getId(), Duration.ofHours(2), startTime.plusHours(1));
-        Subtask subtask3 = new Subtask(103, "Subtask 3", "Description 3", epic1.getId(), Duration.ofHours(3), startTime.plusHours(2));
+        Subtask subtask2 = new Subtask(102, "Subtask 2", "Description 2", epic1.getId(), Duration.ofHours(2), startTime.plusHours(2));
+        Subtask subtask3 = new Subtask(103, "Subtask 3", "Description 3", epic1.getId(), Duration.ofHours(3), startTime.plusHours(4));
 
         manager.createSubtask(epic1.getId(), subtask1);
         manager.createSubtask(epic1.getId(), subtask2);
@@ -132,8 +132,8 @@ class InMemoryHistoryManagerTest {
         manager.createEpic(epic1);
 
         Subtask subtask1 = new Subtask(101, "Subtask 1", "Description 1", epic1.getId(), Duration.ofHours(1), startTime);
-        Subtask subtask2 = new Subtask(102, "Subtask 2", "Description 2", epic1.getId(), Duration.ofHours(2), startTime.plusHours(1));
-        Subtask subtask3 = new Subtask(103, "Subtask 3", "Description 3", epic1.getId(), Duration.ofHours(3), startTime.plusHours(2));
+        Subtask subtask2 = new Subtask(102, "Subtask 2", "Description 2", epic1.getId(), Duration.ofHours(2), startTime.plusHours(2));
+        Subtask subtask3 = new Subtask(103, "Subtask 3", "Description 3", epic1.getId(), Duration.ofHours(3), startTime.plusHours(4));
 
         manager.createSubtask(epic1.getId(), subtask1);
         manager.createSubtask(epic1.getId(), subtask2);

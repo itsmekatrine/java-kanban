@@ -49,6 +49,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public int createTask(Task task) {
+        boolean hasCrossTasks = getAllTasks().stream()
+                .anyMatch(existingTask -> isCrossTasks(existingTask, task));
+        if (hasCrossTasks) {
+            throw new IllegalArgumentException("Есть пересечение с другой задачей");
+        }
         int id = super.createTask(task);
         if (task.getStartTime() != null) {
             prioritizedTasks.add(task);
@@ -66,6 +71,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public int createSubtask(int epicId, Subtask subtask) {
+        boolean hasCrossTasks = getAllSubtasks().stream()
+                .anyMatch(existingSubtask -> isCrossTasks(existingSubtask, subtask));
+        if (hasCrossTasks) {
+            throw new IllegalArgumentException("Есть пересечение с другой подзадачей");
+        }
         int id = super.createSubtask(epicId, subtask);
         if (subtask.getStartTime() != null) {
             prioritizedTasks.add(subtask);
@@ -79,6 +89,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Task oldTask = getTasks().get(id);
         if (oldTask != null) {
             prioritizedTasks.remove(oldTask);
+
+            boolean hasCrossTasks = getAllTasks().stream()
+                    .filter(existingTask -> existingTask.getId() != id)
+                    .anyMatch(existingTask -> isCrossTasks(existingTask, task));
+            if (hasCrossTasks) {
+                throw new IllegalArgumentException("Обновлённая задача пересекается с другой задачей");
+            }
+
             if (task.getStartTime() != null) {
                 prioritizedTasks.add(task);
             }
@@ -98,6 +116,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Subtask oldSubtask = getAllSubtasks().get(id);
         if (oldSubtask != null) {
             prioritizedTasks.remove(oldSubtask);
+
+            boolean hasCrossTasks = getAllSubtasks().stream()
+                    .filter(existingSubtask -> existingSubtask.getId() != id)
+                    .anyMatch(existingSubtask -> isCrossTasks(existingSubtask, subtask));
+            if (hasCrossTasks) {
+                throw new IllegalArgumentException("Обновлённая подзадача пересекается с другой подзадачей");
+            }
+
             if (subtask.getStartTime() != null) {
                 prioritizedTasks.add(subtask);
             }
@@ -144,8 +170,29 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return result;
     }
 
+    public boolean isCrossTasks(Task task1, Task task2) {
+        LocalDateTime start1 = task1.getStartTime();
+        LocalDateTime end1 = task1.getEndTime();
+        LocalDateTime start2 = task2.getStartTime();
+        LocalDateTime end2 = task2.getEndTime();
+
+        return start1.isBefore(end2) && start2.isBefore(end1);
+    }
+
     public List<Task> getPrioritizedTasks() {
         return new ArrayList<>(prioritizedTasks);
+    }
+
+    public void checkCrossTasks() {
+        List<Task> tasks = getPrioritizedTasks();
+        for (int i = 0; i < tasks.size() - 1; i++) {
+            Task currentTask = tasks.get(i);
+            Task nextTask = tasks.get(i + 1);
+
+            if (currentTask.getEndTime().isAfter(nextTask.getStartTime())) {
+                System.out.println("Задачи " + currentTask + " и " + nextTask + " пересекаются");
+            }
+        }
     }
 
     public void save() {
