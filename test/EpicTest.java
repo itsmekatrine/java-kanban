@@ -1,5 +1,3 @@
-package com.yandex.app.test;
-
 import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
@@ -67,18 +65,66 @@ class EpicTest {
     @Test
     public void shouldUpdateEpicStatusAfterDeletingSubtask() {
         LocalDateTime startTime = LocalDateTime.now();
-        Epic epic = new Epic(1001,"Test addNewEpic 1", "Test addNewEpic description 1");
+        Epic epic = new Epic(1001,"Epic 1", "Description 1");
         manager.createEpic(epic);
 
-        Subtask subtask = new Subtask(101, "Test addNewSubtask", "Test addNewSubtask description", epic.getId(), Duration.ofHours(2), startTime);
-        manager.createSubtask(epic.getId(), subtask);
+        Subtask subtask1 = new Subtask(101,"Subtask 1", "Description 1", epic.getId(), Duration.ofHours(1), startTime);
+        Subtask subtask2 = new Subtask(102,"Subtask 2", "Description 2", epic.getId(), Duration.ofHours(2), startTime.plusHours(2));
+        manager.createSubtask(epic.getId(), subtask1);
+        manager.createSubtask(epic.getId(), subtask2);
+        assertEquals(2, epic.getSubtasks().size());
+        manager.deleteSubtaskFromEpic(subtask1.getId());
         assertEquals(1, epic.getSubtasks().size());
-        manager.deleteSubtaskFromEpic(subtask.getId());
-        assertTrue(epic.getSubtasks().isEmpty());
 
         assertEquals(StatusTask.NEW, epic.getStatus(), "Эпик должен иметь статус NEW, когда нет активных подзадач.");
 
         historyManager.updateHistory(epic);
         assertEquals(1, historyManager.getHistory().size());
+    }
+
+    @Test
+    public void shouldChangeStatusEpic() {
+        LocalDateTime startTime = LocalDateTime.now();
+        Epic epic = new Epic(1001,"Epic 1", "Epic 1");
+        manager.createEpic(epic);
+
+        Subtask subtask1 = new Subtask(101,"Subtask 1", "Description 1", epic.getId(), Duration.ofHours(1), startTime);
+        Subtask subtask2 = new Subtask(102,"Subtask 2", "Description 2", epic.getId(), Duration.ofHours(2), startTime.plusHours(2));
+        manager.createSubtask(epic.getId(), subtask1);
+        manager.createSubtask(epic.getId(), subtask2);
+
+        assertEquals(StatusTask.NEW, epic.getStatus(), "Эпик должен иметь статус NEW, когда нет активных подзадач.");
+        System.out.println("Current subtask 1 status: " + subtask1.getStatus());
+        System.out.println("Current subtask 2 status: " + subtask2.getStatus());
+        System.out.println("Current epic status: " + epic.getStatus());
+
+        System.out.println();
+
+        subtask1.setStatus(StatusTask.IN_PROGRESS);
+        epic.updateEpicStatus();
+        System.out.println("Update subtask 1 status: " + subtask1.getStatus());
+        System.out.println("Current subtask 2 status: " + subtask2.getStatus());
+        System.out.println("Update epic status: " + epic.getStatus());
+        assertEquals(StatusTask.IN_PROGRESS, epic.getStatus(), "Эпик должен иметь статус IN PROGRESS, когда есть хотя бы одна активная подзадача.");
+
+        System.out.println();
+
+        subtask1.setStatus(StatusTask.DONE);
+        subtask2.setStatus(StatusTask.NEW);
+        epic.updateEpicStatus();
+        System.out.println("Update subtask 1 status: " + subtask1.getStatus());
+        System.out.println("Update subtask 2 status: " + subtask2.getStatus());
+        System.out.println("Update epic status: " + epic.getStatus());
+        assertEquals(StatusTask.IN_PROGRESS, epic.getStatus(), "Эпик должен иметь статус IN PROGRESS, когда когда одна подзадача завершена, а другая ещё не начата.");
+
+        System.out.println();
+
+        subtask1.setStatus(StatusTask.DONE);
+        subtask2.setStatus(StatusTask.DONE);
+        epic.updateEpicStatus();
+        System.out.println("Update subtask 1 status: " + subtask1.getStatus());
+        System.out.println("Update subtask 2 status: " + subtask2.getStatus());
+        System.out.println("Update epic status: " + epic.getStatus());
+        assertEquals(StatusTask.DONE, epic.getStatus(), "Эпик должен иметь статус DONE, когда все подзадачи завершены.");
     }
 }

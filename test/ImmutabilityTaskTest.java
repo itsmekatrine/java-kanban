@@ -1,5 +1,3 @@
-package com.yandex.app.test;
-
 import com.yandex.app.model.Task;
 import com.yandex.app.service.Managers;
 import com.yandex.app.service.TaskManager;

@@ -6,3 +6,4 @@
 ./test/ManagersTest.java
 ./test/SubtaskTest.java
 ./test/TaskTest.java
+./test/TaskManagerTest.java

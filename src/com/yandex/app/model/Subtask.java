@@ -1,5 +1,6 @@
 package com.yandex.app.model;
 
+import com.yandex.app.service.StatusTask;
 import com.yandex.app.service.TaskType;
 
 import java.time.Duration;
@@ -33,6 +34,13 @@ public class Subtask extends Task {
 
     public void setEpicId(int epicId) {
         this.epicId = epicId;
+    }
+
+    public void setStatus(StatusTask status, Epic epic) {
+        super.setStatus(status);
+        if (epic != null) {
+            epic.updateEpicStatus();
+        }
     }
 
     @Override

@@ -1,5 +1,3 @@
-package com.yandex.app.test;
-
 import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
@@ -83,5 +81,29 @@ class SubtaskTest {
 
         Subtask subtask3 = new Subtask(102,"Test Subtask 3", "Test description 3",5, Duration.ofHours(3), startTime.plusHours(3));
         assertFalse(subtask1.equals(subtask3));
+    }
+
+    @Test
+    void shouldCheckSubtasksInEpic() {
+        manager.createEpic(epic);
+        manager.createSubtask(epic.getId(), subtask);
+
+        final List<Subtask> epicSubtasks = manager.getAllSubtasksOfEpic(epic.getId());
+
+        assertNotNull(epicSubtasks, "Список подзадач эпика не возвращается.");
+        assertEquals(1, epicSubtasks.size(), "Неверное количество подзадач у эпика.");
+        assertEquals(subtask, epicSubtasks.get(0), "Подзадача не содержится в эпике.");
+    }
+
+    @Test
+    void shouldCheckEpicExistenceForSubtask() {
+        manager.createEpic(epic);
+        manager.createSubtask(epic.getId(), subtask);
+
+        Epic savedEpic = manager.getEpicById(subtask.getEpicId());
+        assertNotNull(savedEpic, "Эпик для подзадачи не найден.");
+        assertEquals(epic, savedEpic, "Эпик не соответствует ожидаемому.");
+
+        assertEquals(epic.getId(), subtask.getEpicId(), "ID эпика в подзадаче не совпадает с ожидаемым.");
     }
 }

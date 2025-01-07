@@ -58,24 +58,33 @@ public class Epic extends Task {
     }
 
     // зависимость статуса эпика от подзадач
-    public StatusTask updateEpicStatus() {
+    public void updateEpicStatus() {
         boolean allDone = true;
+        boolean hasInProgress = false;
+        boolean hasNew = false;
+        boolean hasDone = false;
 
         for (Subtask subtask : subtasks) {
+            if (subtask.getStatus() == StatusTask.IN_PROGRESS) {
+                hasInProgress = true;
+            }
+            if (subtask.getStatus() == StatusTask.NEW) {
+                hasNew = true;
+            }
+            if (subtask.getStatus() == StatusTask.DONE) {
+                hasDone = true;
+            }
             if (subtask.getStatus() != StatusTask.DONE) {
                 allDone = false;
             }
         }
 
         if (allDone) {
-            return StatusTask.DONE;
+            this.setStatus(StatusTask.DONE);
+        } else if (hasInProgress || (hasDone && hasNew)) {
+            this.setStatus(StatusTask.IN_PROGRESS);
         } else {
-            for (Subtask subtask : subtasks) {
-                if (subtask.getStatus() == StatusTask.IN_PROGRESS) {
-                    return StatusTask.IN_PROGRESS;
-                }
-            }
-            return StatusTask.NEW;
+            this.setStatus(StatusTask.NEW);
         }
     }
 

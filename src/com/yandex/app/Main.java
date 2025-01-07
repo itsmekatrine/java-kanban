@@ -66,25 +66,6 @@ public class Main {
 
         System.out.println();
 
-        // изменение статуса одной из подзадач
-        System.out.println("Current subtask №2 status: " + subtask2.getStatus());
-        subtask2.setStatus(StatusTask.IN_PROGRESS);
-        manager.updateSubtask(subtaskId2, subtask2);
-        manager.updateEpic(epicId2, epic2);
-
-        System.out.println("Current subtask №3 status: " + subtask3.getStatus());
-        subtask3.setStatus(StatusTask.NEW);
-        manager.updateSubtask(subtaskId3, subtask3);
-        manager.updateEpic(epicId2, epic2);
-
-        System.out.println();
-
-        System.out.println("Updated subtask №2 status: " + subtask2.getStatus());
-        System.out.println("Updated subtask №3 status: " + subtask3.getStatus());
-        System.out.println("Updated epic №2 status: " + epic2.updateEpicStatus());
-
-        System.out.println();
-
         // удаление подзадач эпика № 2
         System.out.println("Delete subtasks of epic №2");
         manager.deleteAllSubtasks();
