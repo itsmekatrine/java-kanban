@@ -12,6 +12,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -23,28 +24,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public FileBackedTaskManager(File file, HistoryManager history) {
         super(history);
         this.file = file;
-        prioritizedTasks = new TreeSet<>((task1, task2) -> {
-            if (task1 == null && task2 == null) {
-                return 0;
-            } else if (task1 == null) {
-                return 1;
-            } else if (task2 == null) {
-                return -1;
-            } else {
-                LocalDateTime time1 = task1.getStartTime();
-                LocalDateTime time2 = task2.getStartTime();
-
-                if (time1 == null && time2 == null) {
-                    return 0;
-                } else if (time1 == null) {
-                    return 1;
-                } else if (time2 == null) {
-                    return -1;
-                } else {
-                    return time1.compareTo(time2);
-                }
-            }
-        });
+        prioritizedTasks = new TreeSet<>(
+                Comparator.comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder()))
+                        .thenComparing(Task::getId)
+        );
     }
 
     @Override
@@ -137,9 +120,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public boolean deleteTaskById(int id) {
+        Task task = getTaskById(id);
         boolean result = super.deleteTaskById(id);
-        if (result) {
-            Task task = getTaskById(id);
+        if (result && task != null) {
             prioritizedTasks.remove(task);
             save();
         }
@@ -148,9 +131,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public boolean deleteSubtaskById(int id) {
+        Subtask subtask = getSubtaskById(id);
         boolean result = super.deleteSubtaskById(id);
-        if (result) {
-            Subtask subtask = getSubtaskById(id);
+        if (result && subtask != null) {
             prioritizedTasks.remove(subtask);
             save();
         }
@@ -159,15 +142,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public boolean deleteEpicById(int id) {
+        Epic epic = getEpicById(id);
         boolean result = super.deleteEpicById(id);
         if (result) {
-            Epic epic = getEpicById(id);
-            List<Subtask> epicSubtasks = getAllSubtasksOfEpic(id);
-            for (Subtask subtask : epicSubtasks) {
-                prioritizedTasks.remove(subtask);
-                getAllSubtasks().remove(subtask.getId());
+            if (getAllSubtasksOfEpic(epic.getId()) != null) {
+                for (Subtask subtask : getAllSubtasksOfEpic(epic.getId())) {
+                    prioritizedTasks.remove(subtask);
+                }
             }
-            prioritizedTasks.remove(epic);
+            if (epic != null) {
+                prioritizedTasks.remove(epic);
+            }
             save();
         }
         return result;
