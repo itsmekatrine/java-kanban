@@ -117,10 +117,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         if (oldSubtask != null) {
             prioritizedTasks.remove(oldSubtask);
 
-            boolean hasCrossTasks = getAllSubtasks().stream()
-                    .filter(existingSubtask -> existingSubtask.getId() != id)
-                    .anyMatch(existingSubtask -> isCrossTasks(existingSubtask, subtask));
-            if (hasCrossTasks) {
+            if (hasCrossingTasks(id, subtask)) {
                 throw new IllegalArgumentException("Обновлённая подзадача пересекается с другой подзадачей");
             }
 
@@ -130,6 +127,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
         super.updateSubtask(id, subtask);
         save();
+    }
+
+    private boolean hasCrossingTasks(int id, Subtask subtask) {
+        return getAllSubtasks().stream()
+                .filter(existingSubtask -> existingSubtask.getId() != id)
+                .anyMatch(existingSubtask -> isCrossTasks(existingSubtask, subtask));
     }
 
     @Override
