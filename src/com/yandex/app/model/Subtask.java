@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 
 public class Subtask extends Task {
     private int epicId;
-    private final TaskType type;
     private Duration duration;
     private LocalDateTime startTime;
 
@@ -19,13 +18,13 @@ public class Subtask extends Task {
                     String.format("Эпик с идентификатором %d не может быть подзадачей самого себя (подзадача: %d)", epicId, id));
         }
         this.epicId = epicId;
-        this.type = TaskType.SUBTASK;
         this.duration = duration;
         this.startTime = startTime != null ? startTime : LocalDateTime.now();
     }
 
+    @Override
     public TaskType getType() {
-        return type;
+        return TaskType.SUBTASK;
     }
 
     public int getEpicId() {

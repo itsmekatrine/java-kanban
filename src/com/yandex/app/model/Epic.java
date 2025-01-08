@@ -2,7 +2,6 @@ package com.yandex.app.model;
 
 import com.yandex.app.service.StatusTask;
 import com.yandex.app.service.TaskType;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,22 +10,17 @@ import java.util.Objects;
 
 public class Epic extends Task {
     private List<Subtask> subtasks;
-    private final TaskType type;
-    private Duration duration;
-    private LocalDateTime startTime;
     private LocalDateTime endTime;
 
     public Epic(int id, String title, String description) {
         super(id, title, description, Duration.ZERO, null);
         this.subtasks = new ArrayList<>();
-        this.type = TaskType.EPIC;
-        this.duration = Duration.ZERO;
-        this.startTime = null;
         this.endTime = null;
     }
 
+    @Override
     public TaskType getType() {
-        return type;
+        return TaskType.EPIC;
     }
 
     public List<Subtask> getSubtasks() {
