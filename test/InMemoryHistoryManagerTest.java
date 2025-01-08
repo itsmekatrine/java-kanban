@@ -56,17 +56,17 @@ class InMemoryHistoryManagerTest {
     @Test
     void shouldHistoryWithoutDuplicates() {
         LocalDateTime startTime = LocalDateTime.now();
-        Task task1 = new Task(1, "Task 1", "Description 1", Duration.ofHours(1), startTime);
-        Task task2 = new Task(2, "Task 2", "Description 2", Duration.ofHours(2), startTime.plusHours(1));
+        Task task1 = new Task(1, "Task 1", "Description 1", Duration.ofMinutes(10), startTime);
+        Task task2 = new Task(2, "Task 2", "Description 2", Duration.ofMinutes(15), startTime.plusMinutes(30));
         manager.createTask(task1);
         manager.createTask(task2);
 
         Epic epic1 = new Epic(1001, "Epic 1", "Epic Description");
         manager.createEpic(epic1);
 
-        Subtask subtask1 = new Subtask(101, "Subtask 1", "Description 1", epic1.getId(), Duration.ofHours(1), startTime);
-        Subtask subtask2 = new Subtask(102, "Subtask 2", "Description 2", epic1.getId(), Duration.ofHours(2), startTime.plusHours(2));
-        Subtask subtask3 = new Subtask(103, "Subtask 3", "Description 3", epic1.getId(), Duration.ofHours(3), startTime.plusHours(4));
+        Subtask subtask1 = new Subtask(101, "Subtask 1", "Description 1", epic1.getId(), Duration.ofHours(1), startTime.plusHours(1));
+        Subtask subtask2 = new Subtask(102, "Subtask 2", "Description 2", epic1.getId(), Duration.ofHours(1), startTime.plusHours(4));
+        Subtask subtask3 = new Subtask(103, "Subtask 3", "Description 3", epic1.getId(), Duration.ofHours(1), startTime.plusHours(6));
 
         manager.createSubtask(epic1.getId(), subtask1);
         manager.createSubtask(epic1.getId(), subtask2);
