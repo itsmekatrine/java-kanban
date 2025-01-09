@@ -70,7 +70,6 @@ public class InMemoryTaskManager implements TaskManager {
         if (task.getStartTime() != null) {
             prioritizedTasks.add(task);
         }
-        save();
         return id;
     }
 
@@ -97,7 +96,6 @@ public class InMemoryTaskManager implements TaskManager {
             prioritizedTasks.add(task);
         }
         tasks.put(id, task);
-        save();
     }
 
     @Override
@@ -106,7 +104,6 @@ public class InMemoryTaskManager implements TaskManager {
         if (task != null) {
             prioritizedTasks.remove(task);
             history.remove(id);
-            save();
             return true;
         }
         return false;
@@ -150,7 +147,6 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask.getStartTime() != null) {
             prioritizedTasks.add(subtask);
         }
-        save();
         return id;
     }
 
@@ -187,7 +183,6 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.updateEpicStatus();
             }
         }
-        save();
     }
 
     @Override
@@ -205,7 +200,6 @@ public class InMemoryTaskManager implements TaskManager {
             epic.getSubtaskIds().removeIf(taskId -> taskId == id);
             epic.updateEpicStatus();
         }
-        save();
         return isRemoved;
     }
 
@@ -241,7 +235,6 @@ public class InMemoryTaskManager implements TaskManager {
         int id = ++currentEpicId;
         epics.put(id, epic);
         history.updateHistory(epic);
-        save();
         return id;
     }
 
@@ -262,7 +255,6 @@ public class InMemoryTaskManager implements TaskManager {
         if (epics.containsKey(id)) {
             epics.replace(id, epic);
         }
-        save();
     }
 
     @Override
@@ -283,7 +275,6 @@ public class InMemoryTaskManager implements TaskManager {
         boolean isRemoved = epics.remove(id) != null;
         history.remove(id);
 
-        save();
         return isRemoved;
     }
 
@@ -310,8 +301,5 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         return start1.isBefore(end2) && start2.isBefore(end1);
-    }
-
-    protected void save() {
     }
 }
