@@ -307,18 +307,6 @@ public class InMemoryTaskManager implements TaskManager {
         return start1.isBefore(end2) && start2.isBefore(end1);
     }
 
-    public void checkCrossTasks() {
-        List<Task> tasks = getPrioritizedTasks();
-        for (int i = 0; i < tasks.size() - 1; i++) {
-            Task currentTask = tasks.get(i);
-            Task nextTask = tasks.get(i + 1);
-
-            if (currentTask.getEndTime().isAfter(nextTask.getStartTime())) {
-                System.out.println("Задачи " + currentTask + " и " + nextTask + " пересекаются");
-            }
-        }
-    }
-
     protected void save() {
     }
 }
