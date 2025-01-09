@@ -9,4 +9,12 @@ public interface HistoryManager {
     List<Task> getHistory();
 
     void updateHistory(Task task);
+
+    void remove(int id);
+
+    void clearHistory();
+
+    Task getCurrentTask(int id);
+
+    Task getLastSavedTask(int id);
 }

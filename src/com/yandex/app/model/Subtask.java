@@ -1,18 +1,26 @@
 package com.yandex.app.model;
 
+import com.yandex.app.service.StatusTask;
+import com.yandex.app.service.TaskType;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Subtask extends Task {
     private int epicId;
 
-    public Subtask(int id, String title, String description, int epicId) throws IllegalArgumentException {
-        validateEpicId(id, epicId);
-        super(id, title, description);
+    public Subtask(int id, String title, String description, int epicId, Duration duration, LocalDateTime startTime) {
+        super(id, title, description,duration, startTime);
+        if (id == epicId) {
+            throw new IllegalArgumentException(
+                    String.format("Эпик с идентификатором %d не может быть подзадачей самого себя (подзадача: %d)", epicId, id));
+        }
         this.epicId = epicId;
     }
 
-    private static void validateEpicId(int id, int epicId) {
-        if (id == epicId) {
-            throw new IllegalArgumentException("Эпик не может быть подзадачей самого себя");
-        }
+    @Override
+    public TaskType getType() {
+        return TaskType.SUBTASK;
     }
 
     public int getEpicId() {
@@ -21,6 +29,13 @@ public class Subtask extends Task {
 
     public void setEpicId(int epicId) {
         this.epicId = epicId;
+    }
+
+    public void setStatus(StatusTask status, Epic epic) {
+        super.setStatus(status);
+        if (epic != null) {
+            epic.updateEpicStatus();
+        }
     }
 
     @Override
@@ -41,12 +56,6 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "com.yandex.app.model.Subtask{" +
-                "epicId=" + epicId +
-                ", id=" + getId() +
-                "title=" + getTitle() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", status=" + getStatus() +
-                '}';
+        return String.format("%s,%d", super.toString(), epicId);
     }
 }

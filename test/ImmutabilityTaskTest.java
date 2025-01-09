@@ -1,20 +1,24 @@
-package com.yandex.app.test;
-
 import com.yandex.app.model.Task;
-import com.yandex.app.service.InMemoryTaskManager;
+import com.yandex.app.service.Managers;
+import com.yandex.app.service.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ImmutabilityTaskTest {
-    private InMemoryTaskManager manager;
+    private TaskManager manager;
     private Task task;
 
     @BeforeEach
     public void setup() {
-        manager = new InMemoryTaskManager();
-        task = new Task(1,"Test addNewTask", "Test addNewTask description");
+        manager = Managers.getDefault();
+        LocalDateTime startTime = LocalDateTime.now();
+        Duration duration = Duration.ofHours(1);
+        task = new Task(1,"Test addNewTask", "Test addNewTask description", duration, startTime);
     }
 
     @Test

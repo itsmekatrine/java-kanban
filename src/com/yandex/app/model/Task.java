@@ -1,35 +1,42 @@
 package com.yandex.app.model;
 
 import com.yandex.app.service.StatusTask;
+import com.yandex.app.service.TaskType;
+
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Task {
     private int id;
-    private String title;
-    private String description;
+    private final String title;
+    private final String description;
     private StatusTask status;
+    protected final TaskType type;
+    protected Duration duration;
+    protected LocalDateTime startTime;
 
-    public Task (int id, String title, String description) {
+    public Task(int id, String title, String description, Duration duration, LocalDateTime startTime) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.status = StatusTask.NEW;
+        this.type = TaskType.TASK;
+        this.duration = duration;
+        this.startTime = startTime != null ? startTime : LocalDateTime.now();
+    }
+
+    public TaskType getType() {
+        return type;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public StatusTask getStatus() {
@@ -42,6 +49,22 @@ public class Task {
 
     public int getId() {
         return id;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plus(duration);
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     @Override
@@ -59,11 +82,8 @@ public class Task {
 
     @Override
     public String toString() {
-        return "com.yandex.app.model.Task{" +
-                "id=" + id +
-                "title=" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                '}';
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd–MM–yy | HH:mm");
+        return String.format("%d,%s,%s,%s,%s,%d,%s",
+                id, getType(), title, status, description, duration.toMinutes(), startTime.format(formatter));
     }
 }

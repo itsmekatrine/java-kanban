@@ -4,6 +4,9 @@ import com.yandex.app.model.Task;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Epic;
 import com.yandex.app.service.*;
+import java.time.LocalDateTime;
+
+import java.time.Duration;
 
 public class Main {
 
@@ -13,9 +16,13 @@ public class Main {
         TaskManager manager = Managers.getDefault();
 
         // создание задач
-        Task task1 = new Task(1,"Task 1", "Task 1");
+        Duration duration1 = Duration.ofHours(1);
+        Duration duration2 = Duration.ofHours(2);
+        LocalDateTime startTime1 = LocalDateTime.now();
+        LocalDateTime startTime2 = startTime1.plusHours(1);
+        Task task1 = new Task(1,"Task 1", "Task 1", duration1, startTime1);
         int taskId1 = manager.createTask(task1);
-        Task task2 = new Task(1,"Task 2", "Task 2");
+        Task task2 = new Task(1,"Task 2", "Task 2", duration2, startTime2);
         int taskId2 = manager.createTask(task2);
 
         // создание эпика № 1
@@ -23,7 +30,9 @@ public class Main {
         int epicId1 = manager.createEpic(epic1);
 
         // создание подзадач к эпику №1
-        Subtask subtask1 = new Subtask(1,"Subtask 1", "Subtask 1", epicId1);
+        Duration duration4 = Duration.ofHours(1);
+        LocalDateTime startTime4 = LocalDateTime.now();
+        Subtask subtask1 = new Subtask(1,"Subtask 1", "Subtask 1", epicId1, duration4, startTime4);
         int subtaskId1 = manager.createSubtask(epicId1, subtask1);
 
         // создание эпика № 2
@@ -31,8 +40,12 @@ public class Main {
         int epicId2 = manager.createEpic(epic2);
 
         // создание подзадач к эпику №2
-        Subtask subtask2 = new Subtask(2,"Subtask 2", "Subtask 2", epicId2);
-        Subtask subtask3 = new Subtask(2,"Subtask 3", "Subtask 3", epicId2);
+        Duration duration5 = Duration.ofHours(1);
+        Duration duration6 = Duration.ofHours(2);
+        LocalDateTime startTime5 = LocalDateTime.now();
+        LocalDateTime startTime6 = startTime5.plusHours(1);
+        Subtask subtask2 = new Subtask(2,"Subtask 2", "Subtask 2", epicId2, duration5, startTime5);
+        Subtask subtask3 = new Subtask(2,"Subtask 3", "Subtask 3", epicId2, duration6, startTime6);
         int subtaskId2 = manager.createSubtask(epicId2, subtask2);
         int subtaskId3 = manager.createSubtask(epicId2, subtask3);
 
@@ -50,25 +63,6 @@ public class Main {
 
         System.out.println("Current epic №1 status: " + epic1.getStatus());
         System.out.println("Current epic №2 status: " + epic2.getStatus());
-
-        System.out.println();
-
-        // изменение статуса одной из подзадач
-        System.out.println("Current subtask №2 status: " + subtask2.getStatus());
-        subtask2.setStatus(StatusTask.IN_PROGRESS);
-        manager.updateSubtask(subtaskId2, subtask2);
-        manager.updateEpic(epicId2, epic2);
-
-        System.out.println("Current subtask №3 status: " + subtask3.getStatus());
-        subtask3.setStatus(StatusTask.NEW);
-        manager.updateSubtask(subtaskId3, subtask3);
-        manager.updateEpic(epicId2, epic2);
-
-        System.out.println();
-
-        System.out.println("Updated subtask №2 status: " + subtask2.getStatus());
-        System.out.println("Updated subtask №3 status: " + subtask3.getStatus());
-        System.out.println("Updated epic №2 status: " + epic2.updateEpicStatus());
 
         System.out.println();
 
