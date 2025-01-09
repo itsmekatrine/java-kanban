@@ -115,6 +115,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllTasks() {
         tasks.keySet().forEach(this::deleteTaskById);
+        prioritizedTasks.removeIf(task -> task instanceof Task);
     }
 
     // методы для подзадач
@@ -219,12 +220,14 @@ public class InMemoryTaskManager implements TaskManager {
                         epic.removeSubtask(removeSubtask);
                         epic.updateEpicStatus();
                     });
+            prioritizedTasks.remove(removeSubtask);
         }
     }
 
     @Override
     public void deleteAllSubtasks() {
         subtasks.keySet().forEach(this::deleteSubtaskFromEpic);
+        prioritizedTasks.removeIf(task -> task instanceof Subtask);
     }
 
     // методы для эпиков
@@ -287,6 +290,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllEpics() {
         epics.keySet().forEach(this::deleteEpicById);
+        prioritizedTasks.removeIf(task -> task instanceof Epic || epics.values().stream()
+                .anyMatch(epic -> epic.getSubtasks().contains(task)));
     }
 
     private boolean hasCrossingTasks(Task task) {
