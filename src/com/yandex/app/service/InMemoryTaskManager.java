@@ -289,12 +289,12 @@ public class InMemoryTaskManager implements TaskManager {
         epics.keySet().forEach(this::deleteEpicById);
     }
 
-    protected boolean hasCrossingTasks(Task task) {
+    private boolean hasCrossingTasks(Task task) {
         return prioritizedTasks.stream()
                 .anyMatch(existingTask -> isCrossTasks(existingTask, task));
     }
 
-    public boolean isCrossTasks(Task task1, Task task2) {
+    private boolean isCrossTasks(Task task1, Task task2) {
         LocalDateTime start1 = task1.getStartTime();
         LocalDateTime end1 = task1.getEndTime();
         LocalDateTime start2 = task2.getStartTime();
