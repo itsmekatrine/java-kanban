@@ -4,6 +4,7 @@ import com.yandex.app.service.StatusTask;
 import com.yandex.app.service.TaskType;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -83,25 +84,27 @@ public class Epic extends Task {
     }
 
     // подсчёт продолжительности выполнения эпика
-    public Duration calculateEpicDuration() {
+    public Duration calculateDurationAndStartEndTime() {
         this.duration = Duration.ZERO;
         this.startTime = LocalDateTime.MAX;
         this.endTime = LocalDateTime.MIN;
 
-        for (Task subtask : subtasks) {
-            this.duration = this.duration.plus(subtask.getDuration());
-            if (subtask.getStartTime() != null && subtask.getStartTime().isBefore(this.startTime)) {
-                this.startTime = subtask.getStartTime();
-            }
-            if (subtask.getEndTime() != null && subtask.getEndTime().isAfter(this.endTime)) {
-                this.endTime = subtask.getEndTime();
-            }
-        }
+        this.duration = subtasks.stream()
+                .map(Task::getDuration)
+                .reduce(Duration.ZERO, Duration::plus);
 
-        if (subtasks.isEmpty()) {
-            this.startTime = null;
-            this.endTime = null;
-        }
+        this.startTime = subtasks.stream()
+                .map(Task::getStartTime)
+                .filter(Objects::nonNull)
+                .min(Comparator.naturalOrder())
+                .orElse(null);
+
+        this.endTime = subtasks.stream()
+                .map(Task::getEndTime)
+                .filter(Objects::nonNull)
+                .max(Comparator.naturalOrder())
+                .orElse(null);
+
         return this.duration;
     }
 

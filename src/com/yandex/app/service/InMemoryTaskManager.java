@@ -141,7 +141,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic != null) {
             epic.getSubtasks().add(subtask);
             epic.updateEpicStatus();
-            epic.calculateEpicDuration();
+            epic.calculateDurationAndStartEndTime();
             history.updateHistory(subtask);
         }
         if (subtask.getStartTime() != null) {
