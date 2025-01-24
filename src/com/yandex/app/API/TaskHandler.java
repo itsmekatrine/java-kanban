@@ -53,35 +53,26 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         Task task = gson.fromJson(body, Task.class);
 
         if (task.getId() == null) {
-            // Если id не указан, создаем новую задачу
+            // Создание новой задачи
             int id = taskManager.createTask(task);
             sendText(exchange, "{\"id\": " + id + "}", 201);
         } else {
-            // Если id указан, обновляем существующую задачу
-            try {
-                taskManager.updateTask(task.getId(), task);
-                sendText(exchange, "{\"message\": \"Task updated successfully\"}", 200);
-            } catch (NotFoundException e) {
-                sendNotFound(exchange, e.getMessage());
-            }
+            // Обновление существующей задачи
+            taskManager.updateTask(task.getId(), task);
+            sendText(exchange, "{\"message\": \"Task updated successfully\"}", 200);
         }
     }
 
     private void handleGetTaskById(HttpExchange exchange) throws IOException {
         int id = extractId(exchange.getRequestURI().getPath());
-        Task task = taskManager.getTaskById(id);
+        Task task = taskManager.getTaskById(id); // Если задача не найдена, выбросится NotFoundException
         sendText(exchange, gson.toJson(task), 200);
     }
 
     private void handleDeleteTaskById(HttpExchange exchange) throws IOException {
         int id = extractId(exchange.getRequestURI().getPath());
-        boolean deleted = taskManager.deleteTaskById(id);
-
-        if (deleted) {
-            sendText(exchange, "", 204);
-        } else {
-            throw new NotFoundException("Task with ID " + id + " not found");
-        }
+        taskManager.deleteTaskById(id); // Если задача не найдена, выбросится NotFoundException
+        sendText(exchange, "", 204);
     }
 
     private void handleDeleteAllTasks(HttpExchange exchange) throws IOException {

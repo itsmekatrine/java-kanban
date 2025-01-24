@@ -143,12 +143,14 @@ public class InMemoryTaskManager implements TaskManager {
         int id = ++currentSubtaskId;
         subtasks.put(id, subtask);
         Epic epic = getEpicById(epicId);
-        if (epic != null) {
-            epic.getSubtasks().add(subtask);
-            epic.updateEpicStatus();
-            epic.calculateDurationAndStartEndTime();
-            history.updateHistory(subtask);
+        if (epic == null) {
+            throw new NotFoundException("Эпик с указанным id не существует");
         }
+        epic.getSubtasks().add(subtask);
+        epic.updateEpicStatus();
+        epic.calculateDurationAndStartEndTime();
+        history.updateHistory(subtask);
+
         if (subtask.getStartTime() != null) {
             prioritizedTasks.add(subtask);
         }
@@ -158,13 +160,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtaskById(int id) {
         Subtask subtask = subtasks.get(id);
-        if (subtask != null) {
-            if (history != null) {
-                history.updateHistory(subtask);
-            }
-            return subtask;
+        if (subtask == null) {
+            throw new NotFoundException("Подзадача с указанным id не существует");
         }
-        return null;
+        if (history != null) {
+            history.updateHistory(subtask);
+        }
+        return subtask;
     }
 
     @Override

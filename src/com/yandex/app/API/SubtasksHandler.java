@@ -39,6 +39,8 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
             }
         } catch (NotFoundException e) {
             sendNotFound(exchange, e.getMessage());
+        } catch (IllegalArgumentException e) {
+            sendHasInteractions(exchange, e.getMessage());
         } catch (Exception e) {
             sendError(exchange, e.getMessage());
         }
@@ -54,41 +56,26 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
         Subtask subtask = gson.fromJson(body, Subtask.class);
 
         if (subtask.getId() == null) {
-            // Если id не указан, создаем новую подзадачу
-            int epicId = subtask.getEpicId();
-            if (taskManager.getEpicById(epicId) == null) {
-                throw new NotFoundException("Epic with ID " + epicId + " not found");
-            }
-            int id = taskManager.createSubtask(epicId, subtask);
+            // Создаем новую подзадачу
+            int id = taskManager.createSubtask(subtask.getEpicId(), subtask);
             sendText(exchange, "{\"id\": " + id + "}", 201);
         } else {
-            // Если id указан, обновляем существующую подзадачу
-            try {
-                taskManager.updateSubtask(subtask.getId(), subtask);
-                sendText(exchange, "{\"message\": \"Subtask updated successfully\"}", 200);
-            } catch (NotFoundException e) {
-                sendNotFound(exchange, e.getMessage());
-            } catch (IllegalArgumentException e) {
-                sendHasInteractions(exchange, e.getMessage());
-            }
+            // Обновляем существующую подзадачу
+            taskManager.updateSubtask(subtask.getId(), subtask);
+            sendText(exchange, "{\"message\": \"Subtask updated successfully\"}", 200);
         }
     }
 
     private void handleGetSubtaskById(HttpExchange exchange) throws IOException {
         int id = extractId(exchange.getRequestURI().getPath());
-        Subtask subtask = taskManager.getSubtaskById(id);
+        Subtask subtask = taskManager.getSubtaskById(id); // Если подзадача не найдена, выбросится NotFoundException
         sendText(exchange, gson.toJson(subtask), 200);
     }
 
     private void handleDeleteSubtaskById(HttpExchange exchange) throws IOException {
         int id = extractId(exchange.getRequestURI().getPath());
-        boolean deleted = taskManager.deleteSubtaskById(id);
-
-        if (deleted) {
-            sendText(exchange, "", 204);
-        } else {
-            throw new NotFoundException("Subtask with ID " + id + " not found");
-        }
+        taskManager.deleteSubtaskById(id); // Если подзадача не найдена, выбросится NotFoundException
+        sendText(exchange, "", 204);
     }
 
     private void handleDeleteAllSubtasks(HttpExchange exchange) throws IOException {
