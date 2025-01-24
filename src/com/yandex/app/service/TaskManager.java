@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface TaskManager {
     // методы для задач
+    List<Task> getPrioritizedTasks();
+
     List<Task> getAllTasks();
 
     Task getTaskByTitle(String title);
