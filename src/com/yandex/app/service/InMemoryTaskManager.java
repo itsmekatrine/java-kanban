@@ -1,5 +1,6 @@
 package com.yandex.app.service;
 
+import com.yandex.app.exception.NotFoundException;
 import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
@@ -31,6 +32,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     public List<Task> getPrioritizedTasks() {
         return new ArrayList<>(prioritizedTasks);
+    }
+
+    public List<Task> getHistory() {
+        return history.getHistory();
     }
 
     // методы для задач
@@ -86,7 +91,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateTask(int id, Task task) {
         Task oldTask = getTasks().get(id);
         if (oldTask == null) {
-            throw new IllegalArgumentException("Задача с указанным id не существует");
+            throw new NotFoundException("Задача с указанным id не существует");
         }
         prioritizedTasks.remove(oldTask);
         if (hasCrossingTasks(task)) {
@@ -166,7 +171,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateSubtask(int id, Subtask newSubtask) {
         Subtask oldSubtask = getAllSubtasks().get(id);
         if (oldSubtask == null) {
-            throw new IllegalArgumentException("Подзадача с указанным id не существует");
+            throw new NotFoundException("Подзадача с указанным id не существует");
         }
         prioritizedTasks.remove(oldSubtask);
         if (hasCrossingTasks(newSubtask)) {

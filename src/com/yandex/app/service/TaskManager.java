@@ -10,6 +10,8 @@ public interface TaskManager {
     // методы для задач
     List<Task> getPrioritizedTasks();
 
+    List<Task> getHistory();
+
     List<Task> getAllTasks();
 
     Task getTaskByTitle(String title);

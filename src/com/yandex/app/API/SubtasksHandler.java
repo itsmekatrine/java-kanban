@@ -3,6 +3,7 @@ package com.yandex.app.API;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.google.gson.Gson;
+import com.yandex.app.exception.NotFoundException;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.service.TaskManager;
 
@@ -17,6 +18,7 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
         this.taskManager = taskManager;
     }
 
+    @Override
     public void handle(HttpExchange exchange) throws IOException {
         try {
             String method = exchange.getRequestMethod();
@@ -24,15 +26,19 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
 
             if ("GET".equals(method) && "/subtasks".equals(path)) {
                 handleGetAllSubtasks(exchange);
-            } else if ("POST".equals(method) && path.matches("/subtasks/\\d+")) {
-                handleCreateSubtask(exchange);
+            } else if ("POST".equals(method) && path.matches("/subtasks/?")) {
+                handleCreateOrUpdateSubtask(exchange);
             } else if ("GET".equals(method) && path.matches("/subtasks/\\d+")) {
                 handleGetSubtaskById(exchange);
             } else if ("DELETE".equals(method) && path.matches("/subtasks/\\d+")) {
                 handleDeleteSubtaskById(exchange);
+            } else if ("DELETE".equals(method) && "/subtasks".equals(path)) {
+                handleDeleteAllSubtasks(exchange);
             } else {
                 sendNotFound(exchange, "Endpoint not found");
             }
+        } catch (NotFoundException e) {
+            sendNotFound(exchange, e.getMessage());
         } catch (Exception e) {
             sendError(exchange, e.getMessage());
         }
@@ -43,28 +49,35 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
         sendText(exchange, gson.toJson(subtasks), 200);
     }
 
-    private void handleCreateSubtask(HttpExchange exchange) throws IOException {
-        int epicId = extractId(exchange.getRequestURI().getPath());
+    private void handleCreateOrUpdateSubtask(HttpExchange exchange) throws IOException {
         String body = new String(exchange.getRequestBody().readAllBytes());
         Subtask subtask = gson.fromJson(body, Subtask.class);
 
-        try {
+        if (subtask.getId() == null) {
+            // Если id не указан, создаем новую подзадачу
+            int epicId = subtask.getEpicId();
+            if (taskManager.getEpicById(epicId) == null) {
+                throw new NotFoundException("Epic with ID " + epicId + " not found");
+            }
             int id = taskManager.createSubtask(epicId, subtask);
             sendText(exchange, "{\"id\": " + id + "}", 201);
-        } catch (Exception e) {
-            sendHasInteractions(exchange, e.getMessage());
+        } else {
+            // Если id указан, обновляем существующую подзадачу
+            try {
+                taskManager.updateSubtask(subtask.getId(), subtask);
+                sendText(exchange, "{\"message\": \"Subtask updated successfully\"}", 200);
+            } catch (NotFoundException e) {
+                sendNotFound(exchange, e.getMessage());
+            } catch (IllegalArgumentException e) {
+                sendHasInteractions(exchange, e.getMessage());
+            }
         }
     }
 
     private void handleGetSubtaskById(HttpExchange exchange) throws IOException {
         int id = extractId(exchange.getRequestURI().getPath());
         Subtask subtask = taskManager.getSubtaskById(id);
-
-        if (subtask == null) {
-            sendNotFound(exchange, "Subtask not found");
-        } else {
-            sendText(exchange, gson.toJson(subtask), 200);
-        }
+        sendText(exchange, gson.toJson(subtask), 200);
     }
 
     private void handleDeleteSubtaskById(HttpExchange exchange) throws IOException {
@@ -74,8 +87,13 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
         if (deleted) {
             sendText(exchange, "", 204);
         } else {
-            sendNotFound(exchange, "Subtask not found");
+            throw new NotFoundException("Subtask with ID " + id + " not found");
         }
+    }
+
+    private void handleDeleteAllSubtasks(HttpExchange exchange) throws IOException {
+        taskManager.deleteAllSubtasks();
+        sendText(exchange, "", 204);
     }
 
     private int extractId(String path) {
