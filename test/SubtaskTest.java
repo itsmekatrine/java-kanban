@@ -1,3 +1,4 @@
+import com.yandex.app.exception.NotFoundException;
 import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
@@ -40,7 +41,8 @@ class SubtaskTest {
         assertTrue(existSubtasksIds.contains(subtask1.getId()));
 
         manager.deleteSubtaskFromEpic(subtask1.getId());
-        assertNull(manager.getSubtaskById(subtask1.getId()), "Удалённая подзадача должна быть null.");
+        assertThrows(NotFoundException.class, () -> manager.getSubtaskById(subtask1.getId()),
+                "Удалённая подзадача должна выбрасывать NotFoundException.");
         assertNotNull(manager.getSubtaskById(subtask2.getId()), "Вторая подзадача существует.");
 
         List<Integer> deletedSubtasksIds = manager.getEpicById(epic.getId()).getSubtaskIds();

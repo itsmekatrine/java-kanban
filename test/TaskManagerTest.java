@@ -1,3 +1,4 @@
+import com.yandex.app.exception.NotFoundException;
 import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
@@ -148,7 +149,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void shouldRemoveSubtaskById() {
         LocalDateTime startTime = LocalDateTime.now();
-        Epic epic = new Epic(1001,"Test addNewEpic", "Test addNewEpic description");
+        Epic epic = new Epic(1001,"Test Epic", "Test Epic description");
         Subtask subtask = new Subtask(101, "Test Subtask", "Test description", epic.getId(), Duration.ofHours(2), startTime);
         manager.createEpic(epic);
         manager.createSubtask(epic.getId(), subtask);
@@ -156,7 +157,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         boolean removed = manager.deleteSubtaskById(subtask.getId());
         assertTrue(removed);
 
-        boolean removedSubtask = manager.deleteSubtaskById(subtask.getId());
-        assertFalse(removedSubtask);
+        assertThrows(NotFoundException.class, () -> manager.getSubtaskById(subtask.getId()),
+                "При попытке получить удалённую подзадачу должно выбрасываться исключение NotFoundException.");
+
+        assertThrows(NotFoundException.class, () -> manager.deleteSubtaskById(subtask.getId()),
+                "При попытке удалить несуществующую подзадачу должно выбрасываться исключение NotFoundException.");
     }
 }

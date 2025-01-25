@@ -89,35 +89,57 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             String strings = Files.readString(file.toPath(), StandardCharsets.UTF_8);
             String[] lines = strings.split(System.lineSeparator());
 
-            boolean isFirstLine = true;
+            boolean isHeader = true;
+
             for (String line : lines) {
-                if (line.trim().isEmpty()) {
+                if (isHeader) {
+                    isHeader = false;
                     continue;
                 }
-                if (isFirstLine) {
-                    isFirstLine = false; // Пропускаем первую строку (заголовок)
+                if (line.trim().isEmpty() || line.startsWith("HISTORY:")) {
                     continue;
                 }
-                if (line.startsWith("HISTORY:")) {
-                    String task = line.substring("HISTORY:".length());
-                    history.getHistory();
-                    continue;
-                }
+
                 System.out.println("Reading line: " + line);
+
+                try {
+                    Task task = fromString(line);
+                    switch (task.getType()) {
+                        case EPIC:
+                            manager.createEpic((Epic) task);
+                            break;
+                        case TASK:
+                            manager.createTask(task);
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Ошибка при обработке строки: " + line, e);
+                }
+            }
+
+            for (String line : lines) {
+                if (line.trim().isEmpty() || line.startsWith("HISTORY:") || isHeaderLine(line)) {
+                    continue;
+                }
+
                 Task task = fromString(line);
-                switch (task.getType()) {
-                    case EPIC:
-                        manager.createEpic((Epic) task);
-                        break;
-                    case SUBTASK:
-                        Subtask subtask = (Subtask) task;
-                        manager.createSubtask(subtask.getEpicId(), subtask);
-                        break;
-                    case TASK:
-                        manager.createTask(task);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Неизвестный тип: " + task.getType());
+                if (task instanceof Subtask) {
+                    Subtask subtask = (Subtask) task;
+                    manager.createSubtask(subtask.getEpicId(), subtask);
+                }
+            }
+
+            for (String line : lines) {
+                if (line.startsWith("HISTORY:")) {
+                    String[] historyIds = line.substring("HISTORY:".length()).split(",");
+                    for (String id : historyIds) {
+                        Task task = manager.getTaskById(Integer.parseInt(id.trim()));
+                        if (task != null) {
+                            history.updateHistory(task);
+                        }
+                    }
                 }
             }
         } catch (IOException e) {
@@ -125,5 +147,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             throw new ManagerSaveException("Ошибка чтения файла: " + e.getMessage());
         }
         return manager;
+    }
+
+    // Метод для проверки, является ли строка заголовком
+    private static boolean isHeaderLine(String line) {
+        return line.toLowerCase().startsWith("id,type,title,status");
     }
 }

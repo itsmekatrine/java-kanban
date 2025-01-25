@@ -48,8 +48,8 @@ public class Epic extends Task {
         subtasks.remove(removeSubtask);
     }
 
-    public boolean hasSubtask(Epic epic, Subtask subtask) {
-        return epic.getSubtasks().contains(subtask);
+    public boolean hasSubtask(Subtask subtask) {
+        return subtasks.contains(subtask);
     }
 
     // зависимость статуса эпика от подзадач
