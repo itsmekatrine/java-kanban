@@ -1,5 +1,6 @@
 package com.yandex.app.API;
 
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.google.gson.Gson;
@@ -8,13 +9,18 @@ import com.yandex.app.model.Subtask;
 import com.yandex.app.service.TaskManager;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
-public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
+public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager taskManager;
-    private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
+            .create();
 
-    public SubtasksHandler(TaskManager taskManager) {
+    public SubtaskHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
     }
 
@@ -55,14 +61,20 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
         String body = new String(exchange.getRequestBody().readAllBytes());
         Subtask subtask = gson.fromJson(body, Subtask.class);
 
-        if (subtask.getId() == null) {
-            // Создаем новую подзадачу
-            int id = taskManager.createSubtask(subtask.getEpicId(), subtask);
-            sendText(exchange, "{\"id\": " + id + "}", 201);
-        } else {
-            // Обновляем существующую подзадачу
-            taskManager.updateSubtask(subtask.getId(), subtask);
-            sendText(exchange, "{\"message\": \"Subtask updated successfully\"}", 200);
+        try {
+            if (subtask.getId() == null || subtask.getId() == 0) {
+                // Создаем новую подзадачу
+                int id = taskManager.createSubtask(subtask.getEpicId(), subtask);
+                sendText(exchange, "{\"id\": " + id + "}", 201);
+            } else {
+                // Обновляем подзадачу
+                taskManager.updateSubtask(subtask.getId(), subtask);
+                sendText(exchange, "{\"message\": \"Subtask updated successfully\"}", 200);
+            }
+        } catch (NotFoundException e) {
+            sendNotFound(exchange, e.getMessage());
+        } catch (Exception e) {
+            sendError(exchange, e.getMessage());
         }
     }
 

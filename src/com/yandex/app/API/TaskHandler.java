@@ -1,17 +1,23 @@
 package com.yandex.app.API;
 
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.google.gson.Gson;
+import java.time.Duration;
 import com.sun.net.httpserver.HttpHandler;
 import com.yandex.app.exception.NotFoundException;
 import com.yandex.app.model.Task;
 import com.yandex.app.service.TaskManager;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class TaskHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager taskManager;
-    private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
+            .create();
 
     public TaskHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
@@ -52,14 +58,18 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         String body = new String(exchange.getRequestBody().readAllBytes());
         Task task = gson.fromJson(body, Task.class);
 
-        if (task.getId() == null) {
+        if (task.getId() == null || task.getId() == 0) {
             // Создание новой задачи
             int id = taskManager.createTask(task);
             sendText(exchange, "{\"id\": " + id + "}", 201);
         } else {
-            // Обновление существующей задачи
-            taskManager.updateTask(task.getId(), task);
-            sendText(exchange, "{\"message\": \"Task updated successfully\"}", 200);
+            // Обновление задачи
+            try {
+                taskManager.updateTask(task.getId(), task);
+                sendText(exchange, "{\"message\": \"Task updated successfully\"}", 200);
+            } catch (NotFoundException e) {
+                sendNotFound(exchange, e.getMessage());
+            }
         }
     }
 

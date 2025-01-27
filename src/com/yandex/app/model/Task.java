@@ -13,7 +13,7 @@ public class Task {
     private final String title;
     private final String description;
     private StatusTask status;
-    protected final TaskType type;
+    protected TaskType type;
     protected Duration duration;
     protected LocalDateTime startTime;
 
@@ -43,8 +43,23 @@ public class Task {
         return status;
     }
 
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public void setTaskType(TaskType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Тип задачи не может быть null");
+        }
+        this.type = type;
+    }
+
     public void setStatus(StatusTask status) {
         this.status = status;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Integer getId() {
@@ -83,7 +98,8 @@ public class Task {
     @Override
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd–MM–yy | HH:mm");
+        String formattedStartTime = (startTime != null) ? startTime.format(formatter) : "null";
         return String.format("%d,%s,%s,%s,%s,%d,%s",
-                id, getType(), title, status, description, duration.toMinutes(), startTime.format(formatter));
+                id, getType(), title, status, description, duration.toMinutes(), formattedStartTime);
     }
 }

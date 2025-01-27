@@ -142,8 +142,11 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         boolean removed = manager.deleteEpicById(epic.getId());
         assertTrue(removed);
 
-        boolean removedEpic = manager.deleteEpicById(epic.getId());
-        assertFalse(removedEpic);
+        Exception exception = assertThrows(NotFoundException.class, () -> {
+            manager.deleteEpicById(epic.getId());
+        });
+
+        assertEquals("Эпик с указанным id не существует: 1001", exception.getMessage());
     }
 
     @Test

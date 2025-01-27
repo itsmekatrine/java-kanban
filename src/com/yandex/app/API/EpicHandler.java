@@ -1,5 +1,6 @@
 package com.yandex.app.API;
 
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.google.gson.Gson;
@@ -7,13 +8,18 @@ import com.yandex.app.model.Epic;
 import com.yandex.app.service.TaskManager;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
-public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
+public class EpicHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager taskManager;
-    private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
+            .create();
 
-    public EpicsHandler(TaskManager taskManager) {
+    public EpicHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
     }
 
@@ -41,7 +47,8 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
 
     private void handleGetAllEpics(HttpExchange exchange) throws IOException {
         List<Epic> epics = taskManager.getAllEpics();
-        sendText(exchange, gson.toJson(epics), 200);
+        String response = gson.toJson(epics);
+        sendText(exchange, response, 200);
     }
 
     private void handleCreateEpic(HttpExchange exchange) throws IOException {

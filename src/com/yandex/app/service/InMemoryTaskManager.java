@@ -70,6 +70,9 @@ public class InMemoryTaskManager implements TaskManager {
             throw new IllegalArgumentException("Есть пересечение с другой задачей");
         }
         int id = ++currentTaskId;
+        task.setId(id);
+        task.setStatus(StatusTask.NEW);
+        task.setTaskType(TaskType.TASK);
         tasks.put(id, task);
         history.updateHistory(task);
         if (task.getStartTime() != null) {
@@ -89,18 +92,21 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(int id, Task task) {
-        Task oldTask = getTasks().get(id);
-        if (oldTask == null) {
-            throw new NotFoundException("Задача с указанным id не существует");
+        Task existingTask = tasks.get(id);
+        if (existingTask == null) {
+            throw new NotFoundException("Задача с указанным id не существует: " + id);
         }
-        prioritizedTasks.remove(oldTask);
+        if (existingTask.getStartTime() != null) {
+            prioritizedTasks.remove(existingTask);
+        }
         if (hasCrossingTasks(task)) {
-            throw new IllegalArgumentException("Обновлённая задача пересекается с другой задачей");
+            throw new IllegalArgumentException("Есть пересечение с другой задачей");
         }
+        task.setId(id);
+        tasks.put(id, task);
         if (task.getStartTime() != null) {
             prioritizedTasks.add(task);
         }
-        tasks.put(id, task);
     }
 
     @Override
@@ -137,16 +143,21 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int createSubtask(int epicId, Subtask subtask) {
+        Epic epic = getEpicById(epicId);
+        if (epic.getSubtasks() == null) {
+            throw new IllegalStateException("Список подзадач в эпике не инициализирован");
+        }
         if (hasCrossingTasks(subtask)) {
             throw new IllegalArgumentException("Есть пересечение с другой подзадачей");
         }
-        Epic epic = getEpicById(epicId);
-        if (epic == null) {
-            throw new NotFoundException("Эпик с указанным id не существует");
-        }
         int id = ++currentSubtaskId;
+        subtask.setId(id);
+        subtask.setStatus(StatusTask.NEW);
+        subtask.setTaskType(TaskType.SUBTASK);
+        subtask.setEpicId(epicId);
         subtasks.put(id, subtask);
-        epic.getSubtasks().add(subtask);
+
+        epic.addSubtask(subtask);
         epic.updateEpicStatus();
         epic.calculateDurationAndStartEndTime();
         history.updateHistory(subtask);
@@ -182,6 +193,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (newSubtask.getStartTime() != null) {
             prioritizedTasks.add(newSubtask);
         }
+        newSubtask.setId(id);
         subtasks.put(id, newSubtask);
         Integer epicId = newSubtask.getEpicId();
         if (epicId != null) {
@@ -243,7 +255,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int createEpic(Epic epic) {
+        if (epic == null) {
+            throw new IllegalArgumentException("Эпик не может быть null");
+        }
         int id = ++currentEpicId;
+        epic.setId(id);
+        epic.setStatus(StatusTask.NEW);
+        epic.setTaskType(TaskType.EPIC);
+        if (epic.getSubtasks() == null) {
+            epic.setSubtasks(new ArrayList<>());
+        }
+        epic.calculateDurationAndStartEndTime();
         epics.put(id, epic);
         history.updateHistory(epic);
         return id;
@@ -252,20 +274,23 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpicById(int id) {
         Epic epic = epics.get(id);
-        if (epic != null) {
-            if (history != null) {
-                history.updateHistory(epic);
-            }
-            return epic;
+        if (epic == null) {
+            throw new NotFoundException("Эпик с указанным id не существует: " + id);
         }
-        return null;
+        if (history != null) {
+            history.updateHistory(epic);
+        }
+        return epic;
     }
 
     @Override
     public void updateEpic(int id, Epic epic) {
-        if (epics.containsKey(id)) {
-            epics.replace(id, epic);
+        Epic existingEpic = epics.get(id);
+        if (existingEpic == null) {
+            throw new NotFoundException("Эпик с указанным id не существует: " + id);
         }
+        epic.setId(id);
+        epics.put(id, epic);
     }
 
     @Override

@@ -84,7 +84,10 @@ class InMemoryHistoryManagerTest {
         manager.getEpicById(1001);
 
         List<Task> history = historyManager.getHistory();
-        System.out.println("История первого запроса: " + historyManager.getHistory());
+        System.out.println("История первого запроса: " + history);
+        for (Task task : history) {
+            System.out.println("ID: " + task.getId() + ", Title: " + task.getTitle() + ", StartTime: " + task.getStartTime());
+        }
         assertEquals(7, history.size(), "История не содержит дубликатов.");
         assertTrue(history.contains(task1));
         assertTrue(history.contains(task2));

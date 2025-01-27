@@ -4,10 +4,7 @@ import com.yandex.app.service.StatusTask;
 import com.yandex.app.service.TaskType;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.*;
 
 public class Epic extends Task {
     private List<Subtask> subtasks;
@@ -29,6 +26,9 @@ public class Epic extends Task {
     }
 
     public List<Integer> getSubtaskIds() {
+        if (subtasks.isEmpty()) {
+            return Collections.emptyList();
+        }
         List<Integer> ids = new ArrayList<>();
         for (Subtask subtask : subtasks) {
             ids.add(subtask.getId());
@@ -41,6 +41,9 @@ public class Epic extends Task {
     }
 
     public void addSubtask(Subtask subtask) {
+        if (subtasks == null) {
+            subtasks = new ArrayList<>();
+        }
         subtasks.add(subtask);
     }
 
