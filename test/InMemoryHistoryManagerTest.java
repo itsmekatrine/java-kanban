@@ -78,6 +78,7 @@ class InMemoryHistoryManagerTest {
         manager.getTaskById(2);
         manager.getTaskById(1);
         manager.getEpicById(1002);
+        System.out.println("Список всех подзадач перед получением: " + manager.getAllSubtasks());
         manager.getSubtaskById(102);
         manager.getSubtaskById(101);
         manager.getSubtaskById(103);

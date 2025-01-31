@@ -1,23 +1,19 @@
 package com.yandex.app.API;
 
-import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.google.gson.Gson;
+import com.yandex.app.HttpTaskServer;
+import com.yandex.app.exception.NotFoundException;
 import com.yandex.app.model.Epic;
 import com.yandex.app.service.TaskManager;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class EpicHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager taskManager;
-    private final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
-            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
-            .create();
+    private final Gson gson = HttpTaskServer.getGson();
 
     public EpicHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
@@ -60,24 +56,37 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     private void handleGetEpicById(HttpExchange exchange) throws IOException {
-        int id = extractId(exchange.getRequestURI().getPath());
-        Epic epic = taskManager.getEpicById(id);
+        try {
+            int epicId = extractId(exchange.getRequestURI().getPath());
+            Epic epic = taskManager.getEpicById(epicId);
 
-        if (epic == null) {
-            sendNotFound(exchange, "Epic not found");
-        } else {
             sendText(exchange, gson.toJson(epic), 200);
+        } catch (NotFoundException e) {
+            sendNotFound(exchange, e.getMessage());
+        } catch (Exception e) {
+            sendError(exchange, e.getMessage());
         }
     }
 
     private void handleDeleteEpicById(HttpExchange exchange) throws IOException {
-        int id = extractId(exchange.getRequestURI().getPath());
-        boolean deleted = taskManager.deleteEpicById(id);
+        try {
+            int id = extractId(exchange.getRequestURI().getPath());
+            Epic epic = taskManager.getEpicById(id);
 
-        if (deleted) {
-            sendText(exchange, "", 204);
-        } else {
-            sendNotFound(exchange, "Epic not found");
+            if (epic == null) {
+                sendNotFound(exchange, "Epic with ID " + id + " not found");
+                return;
+            }
+
+            taskManager.deleteEpicById(id);
+            sendText(exchange, "{\"message\": \"Epic deleted successfully\"}", 200);
+
+        } catch (NotFoundException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+            sendNotFound(exchange, e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Внутренняя ошибка сервера: " + e.getMessage());
+            sendError(exchange, "Internal server error: " + e.getMessage());
         }
     }
 

@@ -74,6 +74,7 @@ public class InMemoryTaskManager implements TaskManager {
         task.setStatus(StatusTask.NEW);
         task.setTaskType(TaskType.TASK);
         tasks.put(id, task);
+        System.out.println("Task stored successfully: " + task);
         history.updateHistory(task);
         if (task.getStartTime() != null) {
             prioritizedTasks.add(task);
@@ -122,7 +123,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
-        tasks.keySet().forEach(this::deleteTaskById);
+        if (tasks == null || tasks.isEmpty()) {
+            return;
+        }
+        List<Integer> taskIds = new ArrayList<>(tasks.keySet());
+        taskIds.forEach(this::deleteTaskById);
+        tasks = new HashMap<>();
         prioritizedTasks.removeIf(task -> task instanceof Task);
     }
 
@@ -150,12 +156,11 @@ public class InMemoryTaskManager implements TaskManager {
         if (hasCrossingTasks(subtask)) {
             throw new IllegalArgumentException("Есть пересечение с другой подзадачей");
         }
-        int id = ++currentSubtaskId;
-        subtask.setId(id);
+        subtask.setId(++currentSubtaskId);
+        subtasks.put(subtask.getId(), subtask);
         subtask.setStatus(StatusTask.NEW);
         subtask.setTaskType(TaskType.SUBTASK);
         subtask.setEpicId(epicId);
-        subtasks.put(id, subtask);
 
         epic.addSubtask(subtask);
         epic.updateEpicStatus();
@@ -165,7 +170,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask.getStartTime() != null) {
             prioritizedTasks.add(subtask);
         }
-        return id;
+        return subtask.getId();
     }
 
     @Override
@@ -310,7 +315,6 @@ public class InMemoryTaskManager implements TaskManager {
         prioritizedTasks.remove(epic);
         boolean isRemoved = epics.remove(id) != null;
         history.remove(id);
-
         return isRemoved;
     }
 

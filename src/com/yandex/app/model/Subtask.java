@@ -23,7 +23,7 @@ public class Subtask extends Task {
         return TaskType.SUBTASK;
     }
 
-    public int getEpicId() {
+    public Integer getEpicId() {
         return epicId;
     }
 

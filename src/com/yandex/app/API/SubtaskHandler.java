@@ -1,24 +1,19 @@
 package com.yandex.app.API;
 
-import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.google.gson.Gson;
+import com.yandex.app.HttpTaskServer;
 import com.yandex.app.exception.NotFoundException;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.service.TaskManager;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager taskManager;
-    private final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
-            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
-            .create();
+    private final Gson gson = HttpTaskServer.getGson();
 
     public SubtaskHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
@@ -62,18 +57,23 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
         Subtask subtask = gson.fromJson(body, Subtask.class);
 
         try {
-            if (subtask.getId() == null || subtask.getId() == 0) {
-                // Создаем новую подзадачу
-                int id = taskManager.createSubtask(subtask.getEpicId(), subtask);
-                sendText(exchange, "{\"id\": " + id + "}", 201);
-            } else {
-                // Обновляем подзадачу
-                taskManager.updateSubtask(subtask.getId(), subtask);
-                sendText(exchange, "{\"message\": \"Subtask updated successfully\"}", 200);
+            if (subtask == null || subtask.getEpicId() == null) {
+                sendError(exchange, "Подзадача некорректна или потерян epicId");
+                return;
             }
+            if (taskManager.getEpicById(subtask.getEpicId()) == null) {
+                sendError(exchange, "Ошибка: Epic с ID " + subtask.getEpicId() + " не найден");
+                return;
+            }
+            subtask.setId(100);
+                // Создаем новую подзадачу
+            int id = taskManager.createSubtask(subtask.getEpicId(), subtask);
+            sendText(exchange, "{\"id\": " + id + "}", 201);
         } catch (NotFoundException e) {
+            System.out.println("Ошибка: " + e.getMessage());
             sendNotFound(exchange, e.getMessage());
         } catch (Exception e) {
+            System.out.println("Внутренняя ошибка сервера: " + e.getMessage());
             sendError(exchange, e.getMessage());
         }
     }
@@ -87,12 +87,12 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
     private void handleDeleteSubtaskById(HttpExchange exchange) throws IOException {
         int id = extractId(exchange.getRequestURI().getPath());
         taskManager.deleteSubtaskById(id); // Если подзадача не найдена, выбросится NotFoundException
-        sendText(exchange, "", 204);
+        sendText(exchange, "", 200);
     }
 
     private void handleDeleteAllSubtasks(HttpExchange exchange) throws IOException {
         taskManager.deleteAllSubtasks();
-        sendText(exchange, "", 204);
+        sendText(exchange, "", 200);
     }
 
     private int extractId(String path) {

@@ -1,23 +1,18 @@
 package com.yandex.app.API;
 
-import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.google.gson.Gson;
-import java.time.Duration;
+import com.yandex.app.HttpTaskServer;
 import com.sun.net.httpserver.HttpHandler;
 import com.yandex.app.exception.NotFoundException;
 import com.yandex.app.model.Task;
 import com.yandex.app.service.TaskManager;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class TaskHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager taskManager;
-    private final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
-            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
-            .create();
+    private final Gson gson = HttpTaskServer.getGson();
 
     public TaskHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
@@ -28,6 +23,8 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         try {
             String method = exchange.getRequestMethod();
             String path = exchange.getRequestURI().getPath();
+
+            System.out.println("Received request: " + method + " " + path); // Debugging line
 
             if ("GET".equals(method) && "/tasks".equals(path)) {
                 handleGetAllTasks(exchange);
@@ -56,7 +53,9 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
     private void handleCreateOrUpdateTask(HttpExchange exchange) throws IOException {
         String body = new String(exchange.getRequestBody().readAllBytes());
+        System.out.println("Received JSON: " + body); // Debugging line
         Task task = gson.fromJson(body, Task.class);
+        System.out.println("Parsed Task: " + task); // Debugging line
 
         if (task.getId() == null || task.getId() == 0) {
             // Создание новой задачи
@@ -75,19 +74,33 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
     private void handleGetTaskById(HttpExchange exchange) throws IOException {
         int id = extractId(exchange.getRequestURI().getPath());
-        Task task = taskManager.getTaskById(id); // Если задача не найдена, выбросится NotFoundException
+        Task task = taskManager.getTaskById(id);
+        if (task == null) {
+            sendNotFound(exchange, "Task with ID " + id + " not found");
+            return;
+        }
         sendText(exchange, gson.toJson(task), 200);
     }
 
     private void handleDeleteTaskById(HttpExchange exchange) throws IOException {
         int id = extractId(exchange.getRequestURI().getPath());
-        taskManager.deleteTaskById(id); // Если задача не найдена, выбросится NotFoundException
-        sendText(exchange, "", 204);
+        Task task = taskManager.getTaskById(id);
+        if (task == null) {
+            sendNotFound(exchange, "Task with ID " + id + " not found");
+            return;
+        }
+        taskManager.deleteTaskById(id);
+        sendText(exchange, "", 200);
     }
 
     private void handleDeleteAllTasks(HttpExchange exchange) throws IOException {
-        taskManager.deleteAllTasks();
-        sendText(exchange, "", 204);
+        try {
+            taskManager.deleteAllTasks();
+            sendText(exchange, "{\"message\": \"All tasks deleted successfully\"}", 200);
+        } catch (Exception e) {
+            System.out.println("Ошибка при удалении всех задач: " + e.getMessage());
+            sendError(exchange, e.getMessage());
+        }
     }
 
     private int extractId(String path) {
