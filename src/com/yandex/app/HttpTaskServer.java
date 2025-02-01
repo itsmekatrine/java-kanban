@@ -15,10 +15,11 @@ import java.time.LocalDateTime;
 public class HttpTaskServer {
     private HttpServer server;
     private TaskManager taskManager;
+    private static final int PORT = 8080;
 
     public HttpTaskServer(TaskManager taskManager) throws IOException {
         this.taskManager = taskManager;
-        this.server = HttpServer.create(new InetSocketAddress(8080), 0);
+        this.server = HttpServer.create(new InetSocketAddress(PORT), 0);
 
         server.createContext("/tasks", new TaskHandler(taskManager));
         server.createContext("/subtasks", new SubtaskHandler(taskManager));
@@ -28,7 +29,7 @@ public class HttpTaskServer {
     }
 
     public void start() {
-        System.out.println("Server started on http://localhost:8080/");
+        System.out.println("Server started on http://localhost:" + PORT + "/");
         server.start();
     }
 
