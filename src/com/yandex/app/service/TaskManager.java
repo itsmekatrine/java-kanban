@@ -8,7 +8,15 @@ import java.util.List;
 
 public interface TaskManager {
     // методы для задач
+    List<Task> getPrioritizedTasks();
+
+    List<Task> getHistory();
+
     List<Task> getAllTasks();
+
+    Task getTaskByTitle(String title);
+
+    Task getTaskByDescription(String description);
 
     int createTask(Task task);
 
@@ -32,6 +40,8 @@ public interface TaskManager {
     void updateSubtask(int id, Subtask newSubtask);
 
     boolean deleteSubtaskById(int id);
+
+    void deleteSubtaskFromEpic(int id);
 
     void deleteAllSubtasks();
 
