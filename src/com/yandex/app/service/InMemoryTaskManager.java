@@ -177,8 +177,9 @@ public class InMemoryTaskManager implements TaskManager {
     public Subtask getSubtaskById(int id) {
         Subtask subtask = subtasks.get(id);
         if (subtask == null) {
-            throw new NotFoundException("Подзадача с указанным id не существует");
+            throw new NotFoundException("Подзадача с указанным id не существует: " + id);
         }
+
         if (history != null) {
             history.updateHistory(subtask);
         }

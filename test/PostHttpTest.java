@@ -1,6 +1,7 @@
 import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
+import com.yandex.app.service.TaskType;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -90,7 +91,8 @@ public class PostHttpTest extends BaseHttpTest {
     public void shouldCreateSubtask() throws IOException, InterruptedException {
         Epic epic = new Epic(1001, "Epic 1", "Description 1");
         int epicId = taskManager.createEpic(epic);
-        Subtask subtask = new Subtask(101, "Subtask 1", "Description 1", epic.getId(), Duration.ofHours(1), LocalDateTime.now().plusHours(1));
+        Subtask subtask = new Subtask(0, "Subtask 1", "Description 1", epic.getId(), Duration.ofHours(1), LocalDateTime.now().plusHours(1));
+        subtask.setTaskType(TaskType.SUBTASK);
 
         String subtaskJson = gson.toJson(subtask);
 
