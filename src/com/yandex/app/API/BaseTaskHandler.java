@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 public abstract class BaseTaskHandler extends BaseHttpHandler implements HttpHandler {
+
     protected final TaskManager taskManager;
     protected final Gson gson = HttpTaskServer.getGson();
 
@@ -46,12 +47,19 @@ public abstract class BaseTaskHandler extends BaseHttpHandler implements HttpHan
             sendError(exchange, e.getMessage());
         }
     }
+
     protected abstract Class<? extends Task> getTaskClass();
+
     protected abstract List<? extends Task> getAllTasks();
+
     protected abstract int createTask(Task task);
+
     protected abstract void updateTask(int id, Task task);
+
     protected abstract Task getTaskById(int id);
+
     protected abstract void deleteTaskById(int id);
+
     protected abstract void deleteAllTasks();
 
     protected void handleGetAllTasks(HttpExchange exchange) throws IOException {
